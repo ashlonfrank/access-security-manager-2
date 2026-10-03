@@ -1,6 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import permissionAssets from "../../permission-assets.json";
 import type { User } from "../../App";
+import {
+  accountGroups,
+  companyGroups,
+  permissionsAccounts,
+} from "./proposalTwoDemo";
 import {
   readStoredPermissions,
   permissionsStorageKey,
@@ -21,12 +26,24 @@ export default function ProposalTwoPermissionsEditor({ user }: { user: User }) {
   const [editing, setEditing] = useState(false);
   const [value, setValue] = useState<Permissions>(() => readPermissions(user.id));
   const [error, setError] = useState("");
+  const [companyFilter, setCompanyFilter] = useState("all");
+  const [accountFilter, setAccountFilter] = useState("all");
+
+  const accountOptions = useMemo(() => {
+    if (companyFilter === "all") return permissionsAccounts;
+    const group = accountGroups.find((g) => g.id === `company-${companyFilter}`);
+    return group ? [group.label] : permissionsAccounts;
+  }, [companyFilter]);
 
   useEffect(() => {
     setValue(readPermissions(user.id));
     setEditing(false);
     setError("");
   }, [user.id]);
+
+  useEffect(() => {
+    setAccountFilter("all");
+  }, [companyFilter]);
 
   function beginEdit() {
     setValue(readPermissions(user.id));
@@ -75,6 +92,38 @@ export default function ProposalTwoPermissionsEditor({ user }: { user: User }) {
                 <img src={permissionAssets.imgMask} alt="" />
               </button>
             )}
+          </div>
+        </div>
+        <div className="p2-filters">
+          <div className="p2-filter">
+            <label htmlFor="p2-company">Company name</label>
+            <select
+              id="p2-company"
+              value={companyFilter}
+              onChange={(e) => setCompanyFilter(e.target.value)}
+            >
+              <option value="all">All companies</option>
+              {companyGroups.map((group) => (
+                <option key={group.id} value={group.id}>
+                  {group.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="p2-filter">
+            <label htmlFor="p2-account">Account number</label>
+            <select
+              id="p2-account"
+              value={accountFilter}
+              onChange={(e) => setAccountFilter(e.target.value)}
+            >
+              <option value="all">All accounts</option>
+              {accountOptions.map((label) => (
+                <option key={label} value={label}>
+                  {label}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
         {error ? (

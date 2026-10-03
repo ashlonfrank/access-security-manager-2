@@ -6,7 +6,6 @@ import {
   accountGroups,
   companyGroups,
   defaultPermissionsUserId,
-  permissionsAccounts,
   proposalTwoUsers,
   userById,
   type ProposalTwoUser,
@@ -183,19 +182,6 @@ function UserPermissionsPage({
   user: ProposalTwoUser;
   onBack: () => void;
 }) {
-  const [companyFilter, setCompanyFilter] = useState("all");
-  const [accountFilter, setAccountFilter] = useState("all");
-
-  const accountOptions = useMemo(() => {
-    if (companyFilter === "all") return permissionsAccounts;
-    const group = accountGroups.find((g) => g.id === `company-${companyFilter}`);
-    return group ? [group.label] : permissionsAccounts;
-  }, [companyFilter]);
-
-  useEffect(() => {
-    setAccountFilter("all");
-  }, [companyFilter]);
-
   const factRows: { label: string; value: string; action: string }[] = [
     { label: "User ID", value: user.userId, action: "Edit user info" },
     { label: "Role", value: user.role, action: "Suspend user" },
@@ -237,38 +223,6 @@ function UserPermissionsPage({
       </section>
 
       <section className="p2-rights-section">
-        <div className="p2-filters">
-          <div className="p2-filter">
-            <label htmlFor="p2-company">Company name</label>
-            <select
-              id="p2-company"
-              value={companyFilter}
-              onChange={(e) => setCompanyFilter(e.target.value)}
-            >
-              <option value="all">All companies</option>
-              {companyGroups.map((group) => (
-                <option key={group.id} value={group.id}>
-                  {group.name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="p2-filter">
-            <label htmlFor="p2-account">Account number</label>
-            <select
-              id="p2-account"
-              value={accountFilter}
-              onChange={(e) => setAccountFilter(e.target.value)}
-            >
-              <option value="all">All accounts</option>
-              {accountOptions.map((label) => (
-                <option key={label} value={label}>
-                  {label}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
         <ProposalTwoPermissionsEditor user={user} />
       </section>
     </div>

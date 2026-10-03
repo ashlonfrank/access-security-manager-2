@@ -754,6 +754,7 @@
   max-width: none;
   height: auto;
   max-height: none;
+  background: #ffffff;
   border-radius: 8px;
   border: 1px solid #dce3ea;
   padding: 0 0 16px;
@@ -770,8 +771,12 @@
   justify-content: space-between;
   align-items: center;
   gap: 16px;
-  padding: 16px 16px 12px;
+  padding: 16px 16px 0;
   margin-bottom: 0;
+}
+
+.proposal-two .p2-embedded-permissions .p2-filters {
+  margin: 16px 16px 8px;
 }
 
 .proposal-two .p2-embedded-permissions .p2-rights-head h2 {
