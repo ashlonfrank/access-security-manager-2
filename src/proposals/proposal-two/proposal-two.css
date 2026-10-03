@@ -514,40 +514,26 @@
   margin: 0;
 }
 
-.proposal-two .p2-status-row {
+.proposal-two .p2-tag-row {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 8px;
-  font-size: 12px;
-  flex-wrap: wrap;
 }
 
-.proposal-two .p2-active {
-  color: var(--p2-success);
-  font-weight: 600;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
+.proposal-two .p2-user-tile .avatar {
+  width: 36px;
+  height: 36px;
 }
 
-.proposal-two .p2-role-divider {
-  color: var(--p2-border);
-}
-
-.proposal-two .p2-role-label {
-  color: #0f171f;
+.proposal-two .p2-profile-status {
+  margin: 8px 0 0;
 }
 
 .proposal-two .p2-contact {
   font-size: 12px;
   color: var(--p2-subdued);
   line-height: 1.5;
-}
-
-.proposal-two .p2-dual {
-  font-size: 12px;
-  color: var(--p2-success);
-  font-weight: 600;
 }
 
 .proposal-two .p2-show-all {

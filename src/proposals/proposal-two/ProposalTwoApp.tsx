@@ -1,12 +1,16 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import Avatar from "../../Avatar";
+import { isInactive, statusClass } from "../../business";
 import {
   accountGroups,
-  cameronRightsAccounts,
   companyGroups,
+  defaultPermissionsUserId,
+  permissionsAccounts,
   proposalTwoUsers,
   userById,
   type ProposalTwoUser,
 } from "./proposalTwoDemo";
+import ProposalTwoChrome from "./ProposalTwoChrome";
 import "./proposal-two.css";
 
 type ViewBy = "user" | "account" | "company";
@@ -18,69 +22,18 @@ const viewByLabels: Record<ViewBy, string> = {
   company: "By company",
 };
 
-function ConnectChrome({
-  asmTab = "all-users",
-  onSearchClick,
-}: {
-  asmTab?: string;
-  onSearchClick?: () => void;
-}) {
+function UserStatusRole({ user }: { user: ProposalTwoUser }) {
   return (
-    <header className="p2-connect-header">
-      <div className="p2-top-bar">
-        <div className="p2-logo">
-          CHASE <span>CONNECT</span>
-        </div>
-        <nav className="p2-global-nav" aria-label="Global">
-          <button type="button">Accounts</button>
-          <button type="button">Pay &amp; Transfer</button>
-          <button type="button">Collect &amp; deposit</button>
-          <button type="button" aria-current="page">
-            Account management
-          </button>
-          <button type="button">Security</button>
-        </nav>
-        <div className="p2-top-actions">
-          <button
-            type="button"
-            className="p2-icon-btn"
-            aria-label="Search"
-            onClick={onSearchClick}
-          >
-            ⌕
-          </button>
-          <button type="button" className="p2-icon-btn" aria-label="Security center">
-            ◈
-          </button>
-          <button
-            type="button"
-            className="p2-icon-btn p2-badge-dot"
-            aria-label="Notifications, 5 unread"
-          >
-            ✉
-          </button>
-          <button type="button" className="p2-icon-btn" aria-label="Profile">
-            👤
-          </button>
-          <button type="button" className="p2-outline-btn">
-            Open an account
-          </button>
-          <button type="button">Sign out</button>
-        </div>
-      </div>
-      <div className="p2-asm-bar">
-        <div className="p2-asm-title">Access and Security Manager</div>
-        <nav className="p2-asm-tabs" aria-label="Access and Security Manager">
-          <button type="button" aria-current={asmTab === "all-users" ? "page" : undefined}>
-            All users
-          </button>
-          <button type="button">Account activity</button>
-          <button type="button">Chase Dual Control</button>
-          <button type="button">IP Security</button>
-          <button type="button">Demos and user guides</button>
-        </nav>
-      </div>
-    </header>
+    <div className="p2-tag-row">
+      <span className={`tag status-tag ${statusClass(user.status)}`}>
+        {isInactive(user.status) ? "Removed" : user.status}
+      </span>
+      <span
+        className={`tag role-tag ${isInactive(user.status) ? "inactive-role" : ""}`}
+      >
+        {isInactive(user.status) ? "N/A" : user.role}
+      </span>
+    </div>
   );
 }
 
@@ -101,13 +54,9 @@ function UserTileCompact({
       onClick={() => onSelect(user.id)}
     >
       <p className="p2-tile-name">{user.name}</p>
-      <div className="p2-status-row">
-        <span className="p2-active">✓ {user.status}</span>
-        <span className="p2-role-divider">|</span>
-        <span className="p2-role-label">{user.role}</span>
-      </div>
+      <UserStatusRole user={user} />
       <div className="p2-contact">
-        <div>{user.phone}</div>
+        <div>{user.job}</div>
         <div>{user.email}</div>
       </div>
     </button>
@@ -124,23 +73,17 @@ function UserTile({
   return (
     <button type="button" className="p2-user-tile" onClick={() => onSelect(user.id)}>
       <div className="p2-tile-top">
-        <span className="p2-avatar-badge" aria-hidden="true">
-          ◉
+        <Avatar user={user} />
+        <span className="p2-chevron" aria-hidden="true">
+          ›
         </span>
       </div>
       <p className="p2-tile-name">{user.name}</p>
-      <div className="p2-status-row">
-        <span className="p2-active">✓ {user.status}</span>
-        <span className="p2-role-divider">|</span>
-        <span className="p2-role-label">{user.role}</span>
-      </div>
+      <UserStatusRole user={user} />
       <div className="p2-contact">
-        <div>{user.phone}</div>
+        <div>{user.job}</div>
         <div>{user.email}</div>
       </div>
-      {user.dualControl ? (
-        <div className="p2-dual">Dual Control Active</div>
-      ) : null}
     </button>
   );
 }
@@ -214,103 +157,17 @@ function ListToolbar({
         onToggle={onViewByToggle}
         onChange={onViewByChange}
       />
-      <div className="p2-toolbar-actions">
+      <div className="p2-action-row">
         <button type="button" className="p2-action-btn">
           + Add authorized user
         </button>
-        <ToolbarMoreMenu />
+        <button type="button" className="p2-action-btn">
+          Assign user rights
+        </button>
+        <button type="button" className="p2-action-btn">
+          Copy user rights
+        </button>
       </div>
-    </div>
-  );
-}
-
-function ToolbarMoreMenu() {
-  return (
-    <div className="p2-user-more">
-      <button
-        type="button"
-        className="p2-more-trigger p2-more-trigger--circle"
-        aria-label="More list actions"
-      >
-        <span className="p2-more-ellipsis" aria-hidden="true">
-          ⋯
-        </span>
-      </button>
-    </div>
-  );
-}
-
-type UserMoreAction = "remove" | "temp-password" | "deactivate";
-
-const userMoreMenuLabels: Record<UserMoreAction, string> = {
-  remove: "Remove user",
-  "temp-password": "Send temporary password",
-  deactivate: "Deactivate user",
-};
-
-function UserMoreMenu({
-  userName,
-  onAction,
-}: {
-  userName: string;
-  onAction: (action: UserMoreAction) => void;
-}) {
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-  const menuId = "p2-user-more-menu";
-
-  useEffect(() => {
-    if (!open) return;
-    const onDoc = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
-    };
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
-    };
-    document.addEventListener("mousedown", onDoc);
-    document.addEventListener("keydown", onKey);
-    return () => {
-      document.removeEventListener("mousedown", onDoc);
-      document.removeEventListener("keydown", onKey);
-    };
-  }, [open]);
-
-  const run = (action: UserMoreAction) => {
-    onAction(action);
-    setOpen(false);
-  };
-
-  return (
-    <div className="p2-user-more" ref={ref}>
-      <button
-        type="button"
-        className="p2-more-trigger p2-more-trigger--circle"
-        aria-haspopup="menu"
-        aria-expanded={open}
-        aria-controls={open ? menuId : undefined}
-        onClick={() => setOpen((v) => !v)}
-      >
-        <span className="visually-hidden">More actions for {userName}</span>
-        <span className="p2-more-ellipsis" aria-hidden="true">
-          ⋯
-        </span>
-      </button>
-      {open ? (
-        <ul className="p2-more-menu" id={menuId} role="menu" aria-label={`More actions for ${userName}`}>
-          {(Object.keys(userMoreMenuLabels) as UserMoreAction[]).map((action) => (
-            <li key={action} role="none">
-              <button
-                type="button"
-                role="menuitem"
-                className={action === "remove" ? "p2-more-menu-danger" : undefined}
-                onClick={() => run(action)}
-              >
-                {userMoreMenuLabels[action]}
-              </button>
-            </li>
-          ))}
-        </ul>
-      ) : null}
     </div>
   );
 }
@@ -323,33 +180,22 @@ function UserPermissionsPage({
   user: ProposalTwoUser;
   onBack: () => void;
 }) {
-  const [toast, setToast] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!toast) return;
-    const timer = window.setTimeout(() => setToast(null), 3200);
-    return () => window.clearTimeout(timer);
-  }, [toast]);
-
-  const factRows: { label: string; value: string }[] = [
-    { label: "User ID", value: user.userId },
-    { label: "Role", value: user.role },
-    { label: "Phone number", value: user.phone },
-    { label: "Email address", value: user.email },
+  const factRows: { label: string; value: string; action: string }[] = [
+    { label: "User ID", value: user.userId, action: "Edit user info" },
+    { label: "Role", value: user.role, action: "Suspend user" },
+    { label: "Job title", value: user.job, action: "Remove user" },
+    { label: "Email address", value: user.email, action: "Request token" },
     {
       label: "Mobile access",
       value: user.mobileAccess ? "On" : "Off",
+      action: "Send temporary password",
     },
     {
       label: "Third-party access",
       value: user.thirdPartyAccess ? "On" : "Off",
+      action: "Copy rights from another user",
     },
   ];
-
-  const onMoreAction = (action: UserMoreAction) => {
-    const label = userMoreMenuLabels[action];
-    setToast(`${label} — demo action for ${user.name}`);
-  };
 
   return (
     <div className="p2-permissions-page">
@@ -358,15 +204,14 @@ function UserPermissionsPage({
       </button>
       <h1 className="p2-details-title">User details</h1>
       <section className="p2-profile-card" aria-labelledby="p2-user-name">
-        <div className="p2-profile-head">
-          <div>
-            <h2 id="p2-user-name" className="p2-profile-name">
-              {user.name}
-            </h2>
-            <p className="p2-active">✓ {user.status}</p>
-          </div>
-          <UserMoreMenu userName={user.name} onAction={onMoreAction} />
-        </div>
+        <h2 id="p2-user-name" className="p2-profile-name">
+          {user.name}
+        </h2>
+        <p className="p2-profile-status">
+          <span className={`tag status-tag ${statusClass(user.status)}`}>
+            {user.status}
+          </span>
+        </p>
         <div className="p2-fact-rows">
           {factRows.map((row) => (
             <div key={row.label} className="p2-fact-row">
@@ -374,15 +219,14 @@ function UserPermissionsPage({
                 <span className="p2-fact-term">{row.label}</span>
                 <span className="p2-fact-value">{row.value}</span>
               </div>
+              <button type="button" className="p2-fact-action">
+                {row.action}
+                <span aria-hidden="true"> ›</span>
+              </button>
             </div>
           ))}
         </div>
       </section>
-      {toast ? (
-        <div className="toast" role="status" aria-live="polite">
-          <span>{toast}</span>
-        </div>
-      ) : null}
 
       <section className="p2-rights-section" aria-labelledby="p2-rights-heading">
         <div className="p2-rights-head">
@@ -422,7 +266,7 @@ function UserPermissionsPage({
           </footer>
         </article>
         <div className="p2-account-accordion">
-          {cameronRightsAccounts.map((label) => (
+          {permissionsAccounts.map((label) => (
             <button key={label} type="button">
               <span aria-hidden="true">›</span>
               {label}
@@ -450,7 +294,10 @@ function readInitialScreen(): Screen {
 
 function readInitialUserId(): string | null {
   const params = new URLSearchParams(window.location.search);
-  return params.get("user") ?? (params.get("view") === "permissions" ? "cameron" : null);
+  return (
+    params.get("user") ??
+    (params.get("view") === "permissions" ? defaultPermissionsUserId : null)
+  );
 }
 
 export default function ProposalTwoApp() {
@@ -466,19 +313,20 @@ export default function ProposalTwoApp() {
   const selectedUser = selectedUserId ? userById(selectedUserId) : undefined;
 
   const leftRailUsers = useMemo(() => {
-    const james = proposalTwoUsers.find((u) => u.id === "james");
-    if (!james) return [];
-    return Array.from({ length: 4 }, (_, i) => ({ ...james, id: `james-l${i}` }));
+    const seed = proposalTwoUsers.slice(0, 2);
+    return seed.flatMap((user) =>
+      Array.from({ length: 2 }, (_, i) => ({ ...user, id: `${user.id}-l${i}` })),
+    );
   }, []);
 
-  const sidebarTiles = useMemo(() => {
-    const cameron = proposalTwoUsers[0];
-    return Array.from({ length: 5 }, (_, i) => ({
-      ...cameron,
-      role: "Authorized user" as const,
-      key: `cam-sb-${i}`,
-    }));
-  }, []);
+  const sidebarTiles = useMemo(
+    () =>
+      proposalTwoUsers.slice(0, 5).map((user, index) => ({
+        ...user,
+        key: `sb-${user.id}-${index}`,
+      })),
+    [],
+  );
 
   const gridUsers = useMemo(() => {
     const base = showAllUsers
@@ -492,7 +340,7 @@ export default function ProposalTwoApp() {
     const q = searchQuery.trim().toLowerCase();
     if (!q) return proposalTwoUsers;
     return proposalTwoUsers.filter((u) =>
-      `${u.name} ${u.email} ${u.phone}`.toLowerCase().includes(q),
+      `${u.name} ${u.email} ${u.job} ${u.role}`.toLowerCase().includes(q),
     );
   }, [searchQuery]);
 
@@ -517,6 +365,10 @@ export default function ProposalTwoApp() {
     setViewByOpen(false);
   };
 
+  const openUserFromRail = (id: string) => {
+    openUser(id.replace(/-l\d+$/, ""));
+  };
+
   const denseSearchGrid = useMemo(
     () =>
       Array.from({ length: 20 }, (_, i) => {
@@ -532,7 +384,7 @@ export default function ProposalTwoApp() {
         <a className="skip-link" href="#proposal-two-main">
           Skip to user details
         </a>
-        <ConnectChrome onSearchClick={openSearch} />
+        <ProposalTwoChrome />
         <main className="p2-main p2-main-permissions" id="proposal-two-main">
           <UserPermissionsPage user={selectedUser} onBack={closeUser} />
         </main>
@@ -546,13 +398,13 @@ export default function ProposalTwoApp() {
       <a className="skip-link" href="#proposal-two-main">
         Skip to all users
       </a>
-      <ConnectChrome onSearchClick={openSearch} />
+      <ProposalTwoChrome />
       <main className="p2-main" id="proposal-two-main">
         {screen === "search" ? (
           <div className="p2-split-3">
             <aside className="p2-company-rail" aria-label="Company context">
               {companyGroups
-                .filter((g) => g.id === "dane")
+                .filter((g) => g.id === "3")
                 .map((group) => (
                   <article key={group.id} className="p2-company-card">
                     <h2 className="p2-company-head">
@@ -651,7 +503,7 @@ export default function ProposalTwoApp() {
                       key={user.id}
                       user={user}
                       selected={false}
-                      onSelect={() => openUser("james")}
+                      onSelect={openUserFromRail}
                     />
                   ))}
                 </aside>
@@ -673,8 +525,6 @@ export default function ProposalTwoApp() {
                         {visibleUsers.map((row, rowIndex) => {
                           const user = userById(row.userId);
                           if (!user) return null;
-                          const roleLabel =
-                            row.role === "Proxy admin" ? "Proxy Admin" : row.role;
                           return (
                             <button
                               key={`${group.id}-${row.userId}-${rowIndex}`}
@@ -685,7 +535,7 @@ export default function ProposalTwoApp() {
                               <div>
                                 <div className="p2-company-user">{user.name}</div>
                                 <div className="p2-company-meta">
-                                  {roleLabel} | {row.accountLabel}
+                                  {row.role} | {row.accountLabel}
                                 </div>
                               </div>
                             </button>
@@ -725,7 +575,7 @@ export default function ProposalTwoApp() {
                     <UserTile
                       key={user.key}
                       user={user}
-                      onSelect={() => openUser("cameron")}
+                      onSelect={(id) => openUser(id)}
                     />
                   ))}
                 </aside>
