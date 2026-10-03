@@ -893,7 +893,7 @@
   max-width: 360px;
 }
 
-.proposal-two .p2-filter label {
+.proposal-two .p2-filter-label {
   display: block;
   font-size: 12px;
   line-height: 20px;
@@ -901,28 +901,27 @@
   margin-bottom: 4px;
 }
 
-.proposal-two .p2-select-wrap {
-  position: relative;
+.proposal-two .p2-solid-picker {
+  width: 100%;
 }
 
-.proposal-two .p2-select-wrap select {
+.proposal-two .p2-solid-picker .role-picker-trigger {
   width: 100%;
-  appearance: none;
-  border: 1px solid var(--p2-border);
-  border-radius: 4px;
-  padding: 8px 40px 8px 12px;
   font-size: 14px;
   line-height: 20px;
-  background: var(--p2-surface);
-  color: #0f171f;
 }
 
-.proposal-two .p2-select-chevron {
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  pointer-events: none;
+.proposal-two .p2-picker-value {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: left;
+}
+
+.proposal-two .p2-picker-chevron {
+  flex-shrink: 0;
 }
 
 .proposal-two .p2-view-by-trigger .p2-chevron-icon {

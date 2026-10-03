@@ -6,8 +6,8 @@ import {
   formatAccountLabel,
   visibleAccountsForUser,
 } from "../../demoAccounts";
-import { ChevronDown } from "./ProposalTwoChevrons";
 import { companyGroups } from "./proposalTwoDemo";
+import ProposalTwoSolidSelect from "./ProposalTwoSolidSelect";
 import {
   readStoredPermissions,
   permissionsStorageKey,
@@ -21,6 +21,13 @@ import {
 
 function readPermissions(user: User): Permissions {
   return readStoredPermissions({ id: user.id, role: user.role });
+}
+
+const tokenChoices = ["Soft token", "Hard token"] as const;
+
+function authenticationTypeLabel(value: Permissions): string {
+  if (!value.mfa) return "No token";
+  return value.token === "Hard token" ? "Hard token" : "Soft token";
 }
 
 /**
@@ -118,42 +125,32 @@ export default function ProposalTwoPermissionsEditor({ user }: { user: User }) {
           </div>
         </div>
         <div className="p2-filters">
-          <div className="p2-filter">
-            <label htmlFor="p2-company">Company name</label>
-            <div className="p2-select-wrap">
-              <select
-                id="p2-company"
-                value={companyFilter}
-                onChange={(e) => setCompanyFilter(e.target.value)}
-              >
-                <option value="all">All companies</option>
-                {companyGroups.map((group) => (
-                  <option key={group.id} value={group.id}>
-                    {group.name}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown className="p2-select-chevron" />
-            </div>
-          </div>
-          <div className="p2-filter">
-            <label htmlFor="p2-account">Account number</label>
-            <div className="p2-select-wrap">
-              <select
-                id="p2-account"
-                value={accountFilter}
-                onChange={(e) => setAccountFilter(e.target.value)}
-              >
-                <option value="all">All accounts</option>
-                {accountOptions.map((account) => (
-                  <option key={account.id} value={account.id}>
-                    {formatAccountLabel(account, user.id)}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown className="p2-select-chevron" />
-            </div>
-          </div>
+          <ProposalTwoSolidSelect
+            id="p2-company"
+            label="Company name"
+            value={companyFilter}
+            onChange={setCompanyFilter}
+            options={[
+              { value: "all", label: "All companies" },
+              ...companyGroups.map((group) => ({
+                value: group.id,
+                label: group.name,
+              })),
+            ]}
+          />
+          <ProposalTwoSolidSelect
+            id="p2-account"
+            label="Account number"
+            value={accountFilter}
+            onChange={setAccountFilter}
+            options={[
+              { value: "all", label: "All accounts" },
+              ...accountOptions.map((account) => ({
+                value: account.id,
+                label: formatAccountLabel(account, user.id),
+              })),
+            ]}
+          />
         </div>
         <div
           className="permissions-scroll p2-permissions-scroll"
@@ -195,24 +192,37 @@ export default function ProposalTwoPermissionsEditor({ user }: { user: User }) {
                   className="permission-checkbox"
                   type="checkbox"
                   checked={value.mfa}
-                  onChange={(event) => setValue({ ...value, mfa: event.target.checked })}
+                  onChange={(event) => {
+                    const mfa = event.target.checked;
+                    setValue((prev) => ({
+                      ...prev,
+                      mfa,
+                      token: mfa
+                        ? prev.token === "No token"
+                          ? "Soft token"
+                          : prev.token
+                        : "No token",
+                    }));
+                  }}
                 />
                 Multi-factor authentication
               </label>
-              <fieldset>
-                <legend>Authentication type</legend>
-                {(["Soft token", "Hard token", "No token"] as const).map((token) => (
-                  <label className="permission-option" key={token}>
-                    <input
-                      type="radio"
-                      name={`token-p2-${user.id}`}
-                      checked={value.token === token}
-                      onChange={() => setValue({ ...value, token })}
-                    />
-                    {token}
-                  </label>
-                ))}
-              </fieldset>
+              {value.mfa ? (
+                <fieldset>
+                  <legend>Authentication type</legend>
+                  {tokenChoices.map((token) => (
+                    <label className="permission-option" key={token}>
+                      <input
+                        type="radio"
+                        name={`token-p2-${user.id}`}
+                        checked={value.token === token}
+                        onChange={() => setValue({ ...value, token })}
+                      />
+                      {token}
+                    </label>
+                  ))}
+                </fieldset>
+              ) : null}
             </div>
           ) : (
             <dl>
@@ -223,7 +233,9 @@ export default function ProposalTwoPermissionsEditor({ user }: { user: User }) {
               <div>
                 <dt>Authentication type</dt>
                 <dd>
-                  <span className="permission-small-tag">{value.token}</span>
+                  <span className="permission-small-tag">
+                    {authenticationTypeLabel(value)}
+                  </span>
                 </dd>
               </div>
             </dl>

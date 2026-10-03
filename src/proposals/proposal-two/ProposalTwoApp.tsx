@@ -331,7 +331,7 @@ export default function ProposalTwoApp() {
     return (
       <div className="proposal-two">
         <a className="skip-link" href="#proposal-two-main">
-          Skip to user details
+          Skip to user permissions
         </a>
         <ProposalTwoChrome />
         <main className="p2-main p2-main-permissions" id="proposal-two-main">
