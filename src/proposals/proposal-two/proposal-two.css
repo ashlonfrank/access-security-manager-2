@@ -709,6 +709,11 @@
   height: 16px;
 }
 
+.proposal-two .p2-fact-action-text {
+  cursor: default;
+  padding: 4px 0;
+}
+
 .proposal-two .p2-profile-card {
   background: var(--p2-surface);
   border: 1px solid #dce3ea;
