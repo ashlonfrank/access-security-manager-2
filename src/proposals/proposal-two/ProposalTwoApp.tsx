@@ -182,20 +182,9 @@ function UserPermissionsPage({
   user: ProposalTwoUser;
   onBack: () => void;
 }) {
-  const factRows: {
-    label: string;
-    value: string;
-    action: string;
-    showChevron: boolean;
-  }[] = [
-    { label: "Role", value: user.role, action: "Remove user", showChevron: true },
-    { label: "Job title", value: user.job, action: "Edit user info", showChevron: true },
-    {
-      label: "Email address",
-      value: user.email,
-      action: "Add authentication",
-      showChevron: false,
-    },
+  const factRows: { label: string; value: string; action: string }[] = [
+    { label: "Role", value: user.role, action: "Remove user" },
+    { label: "Job title", value: user.job, action: "Add authentication" },
   ];
 
   return (
@@ -222,14 +211,10 @@ function UserPermissionsPage({
                 <span className="p2-fact-term">{row.label}</span>
                 <span className="p2-fact-value">{row.value}</span>
               </div>
-              {row.showChevron ? (
-                <button type="button" className="p2-fact-action">
-                  {row.action}
-                  <ChevronRight />
-                </button>
-              ) : (
-                <span className="p2-fact-action p2-fact-action-text">{row.action}</span>
-              )}
+              <button type="button" className="p2-fact-action">
+                {row.action}
+                <ChevronRight />
+              </button>
             </div>
           ))}
         </div>
