@@ -761,9 +761,31 @@
   box-shadow: none;
 }
 
-.proposal-two .p2-embedded-permissions .permissions-scroll {
+.proposal-two .p2-embedded-permissions .p2-permissions-scroll {
   max-height: none;
+  height: auto;
   overflow: visible;
+  background: #ffffff;
+  border-radius: 0 0 8px 8px;
+}
+
+.proposal-two .p2-embedded-permissions .permission-info,
+.proposal-two .p2-embedded-permissions .permission-details {
+  background: #ffffff;
+}
+
+.proposal-two .p2-embedded-permissions .permission-category ul {
+  display: block;
+}
+
+.proposal-two .p2-embedded-permissions .permission-item {
+  color: #0f171f;
+}
+
+.proposal-two .p2-embedded-permissions .permission-accounts {
+  border-top: 1px solid #d3d9de;
+  margin: 24px 16px 12px;
+  padding: 24px 8px 0;
 }
 
 .proposal-two .p2-embedded-permissions .p2-rights-head {

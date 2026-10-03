@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import permissionAssets from "../../permission-assets.json";
 import type { User } from "../../App";
-import { companyIndex } from "../../business";
+import { companyIndex, statusClass } from "../../business";
 import {
   formatAccountLabel,
   visibleAccountsForUser,
@@ -144,13 +144,39 @@ export default function ProposalTwoPermissionsEditor({ user }: { user: User }) {
             </select>
           </div>
         </div>
-        {error ? (
-          <p className="permission-feedback error" role="alert">
-            {error}
-          </p>
-        ) : null}
-        <section className="permission-info">
-          <h3>User authentication</h3>
+        <div
+          className="permissions-scroll p2-permissions-scroll"
+          tabIndex={0}
+          aria-label={`Permissions for ${user.name}`}
+        >
+          {error ? (
+            <p className="permission-feedback error" role="alert">
+              {error}
+            </p>
+          ) : null}
+          <section className="permission-info">
+            <div className="permission-info-heading">
+              <h3>User info</h3>
+            </div>
+            <dl>
+              <div>
+                <dt>Role</dt>
+                <dd>
+                  <span className="permission-small-tag">{user.role}</span>
+                </dd>
+              </div>
+              <div>
+                <dt>Status</dt>
+                <dd>
+                  <span className={`tag status-tag ${statusClass(user.status)}`}>
+                    {user.status}
+                  </span>
+                </dd>
+              </div>
+            </dl>
+          </section>
+          <section className="permission-info">
+            <h3>User authentication</h3>
           {editing ? (
             <div className="authentication-editor">
               <label className="permission-option">
@@ -191,9 +217,10 @@ export default function ProposalTwoPermissionsEditor({ user }: { user: User }) {
               </div>
             </dl>
           )}
-        </section>
-        <PermissionCategoriesEditor />
-        <PermissionAccountsEditor />
+          </section>
+          <PermissionCategoriesEditor />
+          <PermissionAccountsEditor />
+        </div>
       </div>
     </EditorContext.Provider>
   );
