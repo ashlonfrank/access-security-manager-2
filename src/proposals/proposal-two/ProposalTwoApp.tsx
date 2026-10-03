@@ -127,9 +127,6 @@ function UserTile({
         <span className="p2-avatar-badge" aria-hidden="true">
           ◉
         </span>
-        <span className="p2-chevron" aria-hidden="true">
-          ›
-        </span>
       </div>
       <p className="p2-tile-name">{user.name}</p>
       <div className="p2-status-row">
@@ -283,7 +280,6 @@ function UserMoreMenu({
         onClick={() => setOpen((v) => !v)}
       >
         <span className="visually-hidden">More actions for {userName}</span>
-        <span aria-hidden="true">More</span>
         <span className="p2-more-ellipsis" aria-hidden="true">
           ⋯
         </span>
@@ -681,9 +677,6 @@ export default function ProposalTwoApp() {
                                   {roleLabel} | {row.accountLabel}
                                 </div>
                               </div>
-                              <span className="p2-chevron" aria-hidden="true">
-                                ›
-                              </span>
                             </button>
                           );
                         })}
@@ -747,9 +740,6 @@ export default function ProposalTwoApp() {
                             <div className="p2-company-user">{user.name}</div>
                             <div className="p2-company-meta">{row.role}</div>
                           </div>
-                          <span className="p2-chevron" aria-hidden="true">
-                            ›
-                          </span>
                         </button>
                       );
                     })}

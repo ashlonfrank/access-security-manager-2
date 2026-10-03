@@ -253,6 +253,16 @@
   gap: 16px;
 }
 
+.proposal-two .p2-profile-card .p2-user-more {
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.proposal-two .p2-profile-card:hover .p2-user-more,
+.proposal-two .p2-profile-card .p2-user-more:focus-within {
+  opacity: 1;
+}
+
 .proposal-two .p2-user-more {
   position: relative;
   flex-shrink: 0;
@@ -261,10 +271,11 @@
 .proposal-two .p2-more-trigger {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  justify-content: center;
   border: 1px solid var(--p2-border);
   border-radius: 4px;
-  padding: 8px 12px;
+  padding: 8px 10px;
+  min-width: 36px;
   font-size: 13px;
   font-weight: 600;
   color: var(--p2-interactive);
