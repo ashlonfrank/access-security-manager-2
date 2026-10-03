@@ -10,7 +10,7 @@ import {
 import "./proposal-two.css";
 
 type ViewBy = "user" | "account" | "company";
-type Screen = "list" | "details" | "search";
+type Screen = "list" | "search";
 
 const viewByLabels: Record<ViewBy, string> = {
   user: "By user",
@@ -81,6 +81,36 @@ function ConnectChrome({
         </nav>
       </div>
     </header>
+  );
+}
+
+function UserTileCompact({
+  user,
+  selected,
+  onSelect,
+}: {
+  user: ProposalTwoUser;
+  selected: boolean;
+  onSelect: (id: string) => void;
+}) {
+  return (
+    <button
+      type="button"
+      className="p2-user-tile-compact"
+      aria-current={selected ? "true" : undefined}
+      onClick={() => onSelect(user.id)}
+    >
+      <p className="p2-tile-name">{user.name}</p>
+      <div className="p2-status-row">
+        <span className="p2-active">✓ {user.status}</span>
+        <span className="p2-role-divider">|</span>
+        <span className="p2-role-label">{user.role}</span>
+      </div>
+      <div className="p2-contact">
+        <div>{user.phone}</div>
+        <div>{user.email}</div>
+      </div>
+    </button>
   );
 }
 
@@ -202,7 +232,7 @@ function ListToolbar({
   );
 }
 
-function UserDetailsView({
+function UserDetailPanel({
   user,
   onBack,
 }: {
@@ -219,11 +249,11 @@ function UserDetailsView({
   ];
 
   return (
-    <main className="p2-main" id="proposal-two-main">
+    <div className="p2-detail-panel">
       <button type="button" className="p2-details-back" onClick={onBack}>
         ‹ Back to all users
       </button>
-      <h1 className="p2-details-title">User details</h1>
+      <h2 className="p2-details-title">User details</h2>
       <section className="p2-profile-card" aria-labelledby="p2-user-name">
         <h2 id="p2-user-name" className="p2-profile-name">
           {user.name}
@@ -299,7 +329,7 @@ function UserDetailsView({
           ))}
         </div>
       </section>
-    </main>
+    </div>
   );
 }
 
@@ -314,6 +344,7 @@ export default function ProposalTwoApp() {
   const [expandedCompanies, setExpandedCompanies] = useState<Record<string, boolean>>(
     {},
   );
+  const [searchPanelOpen, setSearchPanelOpen] = useState(false);
 
   const selectedUser = selectedUserId ? userById(selectedUserId) : undefined;
 
@@ -335,27 +366,41 @@ export default function ProposalTwoApp() {
 
   const openUser = (id: string) => {
     setSelectedUserId(id);
-    setScreen("details");
     setViewByOpen(false);
   };
+
+  const closeUser = () => setSelectedUserId(null);
 
   const openSearch = () => {
+    if (viewBy === "company" && screen === "list") {
+      setSearchPanelOpen(true);
+      setSelectedUserId((id) => id ?? "cameron");
+      return;
+    }
     setScreen("search");
+    setSearchPanelOpen(false);
+    setSelectedUserId("cameron");
     setViewByOpen(false);
   };
 
-  if (screen === "details" && selectedUser) {
-    return (
-      <div className="proposal-two">
-        <a className="skip-link" href="#proposal-two-main">
-          Skip to user details
-        </a>
-        <ConnectChrome onSearchClick={openSearch} />
-        <UserDetailsView user={selectedUser} onBack={() => setScreen("list")} />
-        <BaselineLink />
-      </div>
-    );
-  }
+  const railUsers = useMemo(() => {
+    const repeat = (user: ProposalTwoUser, count: number) =>
+      Array.from({ length: count }, (_, i) => ({ ...user, id: `${user.id}-r${i}` }));
+    return [
+      ...repeat(proposalTwoUsers[1], 3),
+      ...repeat(proposalTwoUsers[2], 3),
+      proposalTwoUsers[0],
+    ];
+  }, []);
+
+  const denseSearchGrid = useMemo(
+    () =>
+      Array.from({ length: 20 }, (_, i) => {
+        const user = proposalTwoUsers[i % proposalTwoUsers.length];
+        return { ...user, key: `search-${i}` };
+      }),
+    [],
+  );
 
   return (
     <div className="proposal-two">
@@ -365,38 +410,70 @@ export default function ProposalTwoApp() {
       <ConnectChrome onSearchClick={openSearch} />
       <main className="p2-main" id="proposal-two-main">
         {screen === "search" ? (
-          <>
-            <div className="p2-search-bar">
-              <button
-                type="button"
-                className="p2-back-btn"
-                aria-label="Back to all users"
-                onClick={() => setScreen("list")}
-              >
-                ‹
-              </button>
-              <label className="p2-search-input-wrap">
-                <span className="visually-hidden">Search authorized users</span>
-                <span aria-hidden="true">⌕</span>
-                <input
-                  type="search"
-                  placeholder="Search authorized users"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  autoFocus
-                />
-              </label>
-              <div className="p2-search-meta">
-                <span>Sort by: Alphabetical order</span>
-                <span>Filter by: All</span>
+          <div className={selectedUser ? "p2-split-3" : "p2-split-2"}>
+            <aside className="p2-company-rail" aria-label="Company context">
+              {companyGroups
+                .filter((g) => g.id === "dane")
+                .map((group) => (
+                  <article key={group.id} className="p2-company-card">
+                    <h2 className="p2-company-head">
+                      {group.name}{" "}
+                      <span>({group.accountCount} accounts)</span>
+                    </h2>
+                    {group.users.slice(0, 4).map((row) => {
+                      const user = userById(row.userId);
+                      if (!user) return null;
+                      return (
+                        <div key={row.userId} className="p2-company-row">
+                          <div className="p2-company-user">{user.name.split(" ").pop()}</div>
+                        </div>
+                      );
+                    })}
+                    <button type="button" className="p2-show-more">
+                      Show more
+                    </button>
+                  </article>
+                ))}
+            </aside>
+            <div>
+              <div className="p2-search-bar">
+                <button
+                  type="button"
+                  className="p2-back-btn"
+                  aria-label="Back to all users"
+                  onClick={() => {
+                    setScreen("list");
+                    closeUser();
+                  }}
+                >
+                  ‹
+                </button>
+                <label className="p2-search-input-wrap">
+                  <span className="visually-hidden">Search authorized users</span>
+                  <span aria-hidden="true">⌕</span>
+                  <input
+                    type="search"
+                    placeholder="Search authorized users"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    autoFocus
+                  />
+                </label>
+                <div className="p2-search-meta">
+                  <span>Sort by: Alphabetical order</span>
+                  <span>Filter by: All</span>
+                </div>
+              </div>
+              <div className="p2-user-grid">
+                {denseSearchGrid.map((user) => (
+                  <UserTile key={user.key} user={user} onSelect={openUser} />
+                ))}
               </div>
             </div>
-            <div className="p2-user-grid">
-              {searchResults.map((user, index) => (
-                <UserTile key={`${user.id}-${index}`} user={user} onSelect={openUser} />
-              ))}
-            </div>
-          </>
+            {selectedUser ? (
+              <UserDetailPanel user={selectedUser} onBack={closeUser} />
+            ) : null}
+          </div>
         ) : (
           <>
             <h1 className="p2-page-title">All users</h1>
@@ -408,29 +485,53 @@ export default function ProposalTwoApp() {
             />
 
             {viewBy === "user" ? (
-              <>
-                <div className="p2-user-grid">
-                  {gridUsers.map((user, index) => (
-                    <UserTile
-                      key={`${user.id}-${index}`}
-                      user={user}
-                      onSelect={openUser}
-                    />
-                  ))}
+              selectedUser ? (
+                <div className="p2-split-2">
+                  <div className="p2-split-list" aria-label="Users">
+                    {railUsers.map((user) => {
+                      const baseId = user.id.replace(/-r\d+$/, "") || user.id;
+                      return (
+                        <UserTileCompact
+                          key={user.id}
+                          user={user}
+                          selected={selectedUserId === baseId}
+                          onSelect={() => openUser(baseId)}
+                        />
+                      );
+                    })}
+                  </div>
+                  <UserDetailPanel user={selectedUser} onBack={closeUser} />
                 </div>
-                {!showAllUsers ? (
-                  <button
-                    type="button"
-                    className="p2-show-all"
-                    onClick={() => setShowAllUsers(true)}
-                  >
-                    Show all <span aria-hidden="true">⌄</span>
-                  </button>
-                ) : null}
-              </>
+              ) : (
+                <>
+                  <div className="p2-user-grid">
+                    {gridUsers.map((user, index) => (
+                      <UserTile
+                        key={`${user.id}-${index}`}
+                        user={user}
+                        onSelect={openUser}
+                      />
+                    ))}
+                  </div>
+                  {!showAllUsers ? (
+                    <button
+                      type="button"
+                      className="p2-show-all"
+                      onClick={() => setShowAllUsers(true)}
+                    >
+                      Show all <span aria-hidden="true">⌄</span>
+                    </button>
+                  ) : null}
+                </>
+              )
             ) : null}
 
             {viewBy === "company" ? (
+              <div
+                className={
+                  searchPanelOpen ? "p2-split-2" : "p2-company-grid-wrap"
+                }
+              >
               <div className="p2-company-grid">
                 {companyGroups.map((group) => {
                   const expanded = expandedCompanies[group.id];
@@ -483,6 +584,38 @@ export default function ProposalTwoApp() {
                     </article>
                   );
                 })}
+              </div>
+              {searchPanelOpen ? (
+                <aside className="p2-search-sidebar" aria-label="Search users">
+                  <h2>Search authorized users</h2>
+                  <label className="p2-search-input-wrap">
+                    <span className="visually-hidden">Search authorized users</span>
+                    <span aria-hidden="true">⌕</span>
+                    <input
+                      type="search"
+                      placeholder="Search authorized users"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                  </label>
+                  <div className="p2-search-meta" style={{ margin: "12px 0" }}>
+                    <span>Sort by: Alphabetical order</span>
+                  </div>
+                  {searchResults.slice(0, 6).map((user, index) => (
+                    <UserTileCompact
+                      key={`${user.id}-sb-${index}`}
+                      user={user}
+                      selected={selectedUserId === user.id}
+                      onSelect={openUser}
+                    />
+                  ))}
+                  {selectedUser ? (
+                    <div style={{ marginTop: 16 }}>
+                      <UserDetailPanel user={selectedUser} onBack={closeUser} />
+                    </div>
+                  ) : null}
+                </aside>
+              ) : null}
               </div>
             ) : null}
 

@@ -151,9 +151,86 @@
 }
 
 .proposal-two .p2-main {
-  max-width: 1120px;
+  max-width: 1280px;
   margin: 0 auto;
   padding: 32px 32px 64px;
+}
+
+.proposal-two .p2-split-2 {
+  display: grid;
+  grid-template-columns: minmax(300px, 380px) minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.proposal-two .p2-split-3 {
+  display: grid;
+  grid-template-columns: 200px minmax(0, 1fr) minmax(320px, 400px);
+  gap: 20px;
+  align-items: start;
+}
+
+.proposal-two .p2-split-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: calc(100vh - 220px);
+  overflow: auto;
+  padding-right: 4px;
+}
+
+.proposal-two .p2-user-tile-compact {
+  background: var(--p2-surface);
+  border: 1px solid #dce3ea;
+  border-radius: 8px;
+  padding: 12px;
+  text-align: left;
+  width: 100%;
+}
+
+.proposal-two .p2-user-tile-compact[aria-current="true"] {
+  border-color: var(--p2-interactive);
+  box-shadow: 0 0 0 1px var(--p2-interactive);
+}
+
+.proposal-two .p2-user-tile-compact .p2-tile-name {
+  font-size: 14px;
+}
+
+.proposal-two .p2-detail-panel {
+  min-width: 0;
+}
+
+.proposal-two .p2-detail-panel .p2-details-title {
+  text-align: left;
+  font-size: 20px;
+  margin-bottom: 16px;
+}
+
+.proposal-two .p2-company-rail {
+  font-size: 13px;
+}
+
+.proposal-two .p2-company-rail .p2-company-card {
+  margin-bottom: 12px;
+}
+
+.proposal-two .p2-search-sidebar {
+  background: var(--p2-surface);
+  border: 1px solid #dce3ea;
+  border-radius: 8px;
+  padding: 16px;
+  max-height: calc(100vh - 220px);
+  overflow: auto;
+}
+
+.proposal-two .p2-search-sidebar h2 {
+  font-size: 14px;
+  margin: 0 0 12px;
+}
+
+.proposal-two .p2-search-sidebar .p2-user-tile-compact {
+  margin-bottom: 8px;
 }
 
 .proposal-two .p2-page-title {
@@ -338,10 +415,15 @@
   gap: 6px;
 }
 
+.proposal-two .p2-company-grid-wrap .p2-company-grid,
 .proposal-two .p2-company-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 20px;
+}
+
+.proposal-two .p2-split-2 > .p2-company-grid {
+  grid-template-columns: 1fr;
 }
 
 .proposal-two .p2-company-card {
