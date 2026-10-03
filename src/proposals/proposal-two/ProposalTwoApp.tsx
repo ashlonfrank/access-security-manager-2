@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import assets from "../../assets.json";
 import Avatar from "../../Avatar";
 import { isInactive, statusClass } from "../../business";
 import {
@@ -21,6 +22,10 @@ const viewByLabels: Record<ViewBy, string> = {
   account: "By account",
   company: "By company",
 };
+
+function Icon({ src }: { src: string }) {
+  return <img src={src} alt="" />;
+}
 
 function UserStatusRole({ user }: { user: ProposalTwoUser }) {
   return (
@@ -157,15 +162,10 @@ function ListToolbar({
         onToggle={onViewByToggle}
         onChange={onViewByChange}
       />
-      <div className="p2-action-row">
-        <button type="button" className="p2-action-btn">
-          + Add authorized user
-        </button>
-        <button type="button" className="p2-action-btn">
-          Assign user rights
-        </button>
-        <button type="button" className="p2-action-btn">
-          Copy user rights
+      <div className="p2-toolbar-actions">
+        <button type="button" className="primary-button">
+          Add a user
+          <Icon src={assets.imgMask1} />
         </button>
       </div>
     </div>
