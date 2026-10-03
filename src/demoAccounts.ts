@@ -49,12 +49,12 @@ function buildCompanyCatalog(companyIdx: number): DemoCompanyAccount[] {
     displayName: productDisplayNames[product],
   });
 
-  /** Company → accounts (product mix varies by location). */
+  /** Each company: 4–5 accounts; titles are Chase products, not company names. */
   const productsByCompany: AccountProduct[][] = [
-    ["checking", "checking", "savings", "credit_card", "payroll", "merchant_services"],
-    ["checking", "checking", "savings", "credit_card", "merchant_services"],
-    ["checking", "savings", "merchant_services"],
-    ["checking", "savings", "payroll", "merchant_services"],
+    ["checking", "checking", "savings", "credit_card", "payroll"],
+    ["checking", "savings", "credit_card", "payroll", "merchant_services"],
+    ["checking", "checking", "savings", "credit_card", "payroll"],
+    ["checking", "savings", "credit_card", "payroll", "merchant_services"],
   ];
 
   const products = productsByCompany[companyIdx] ?? productsByCompany[0];
@@ -138,10 +138,7 @@ export function isAccountEntitled(
   return true;
 }
 
-/**
- * Accounts visible for a user in a company context (home company or P2 selection).
- * Hierarchy: company → accounts → user access flags.
- */
+/** Company → accounts → user access flags (P2 company selection uses companyIdx). */
 export function visibleAccountsForUser(
   userId: string,
   role: string,

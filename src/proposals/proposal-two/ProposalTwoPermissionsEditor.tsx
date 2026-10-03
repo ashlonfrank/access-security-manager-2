@@ -2,11 +2,11 @@ import { useEffect, useMemo, useState } from "react";
 import permissionAssets from "../../permission-assets.json";
 import type { User } from "../../App";
 import { companyIndex } from "../../business";
-import { companyGroups } from "./proposalTwoDemo";
 import {
   formatAccountLabel,
   visibleAccountsForUser,
 } from "../../demoAccounts";
+import { companyGroups } from "./proposalTwoDemo";
 import {
   readStoredPermissions,
   permissionsStorageKey,
@@ -38,7 +38,7 @@ export default function ProposalTwoPermissionsEditor({ user }: { user: User }) {
     return Number.isFinite(parsed) ? parsed : companyIndex(user.id);
   }, [companyFilter, user.id]);
 
-  const entitledAccounts = useMemo(
+  const accountOptions = useMemo(
     () => visibleAccountsForUser(user.id, user.role, value, companyIdx),
     [user.id, user.role, value, companyIdx],
   );
@@ -136,7 +136,7 @@ export default function ProposalTwoPermissionsEditor({ user }: { user: User }) {
               onChange={(e) => setAccountFilter(e.target.value)}
             >
               <option value="all">All accounts</option>
-              {entitledAccounts.map((account) => (
+              {accountOptions.map((account) => (
                 <option key={account.id} value={account.id}>
                   {formatAccountLabel(account, user.id)}
                 </option>
