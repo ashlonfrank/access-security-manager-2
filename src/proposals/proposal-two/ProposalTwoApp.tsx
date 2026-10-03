@@ -214,17 +214,28 @@ function ListToolbar({
         onToggle={onViewByToggle}
         onChange={onViewByChange}
       />
-      <div className="p2-action-row">
+      <div className="p2-toolbar-actions">
         <button type="button" className="p2-action-btn">
           + Add authorized user
         </button>
-        <button type="button" className="p2-action-btn">
-          Assign user rights
-        </button>
-        <button type="button" className="p2-action-btn">
-          Copy user rights
-        </button>
+        <ToolbarMoreMenu />
       </div>
+    </div>
+  );
+}
+
+function ToolbarMoreMenu() {
+  return (
+    <div className="p2-user-more">
+      <button
+        type="button"
+        className="p2-more-trigger p2-more-trigger--circle"
+        aria-label="More list actions"
+      >
+        <span className="p2-more-ellipsis" aria-hidden="true">
+          ⋯
+        </span>
+      </button>
     </div>
   );
 }
@@ -273,7 +284,7 @@ function UserMoreMenu({
     <div className="p2-user-more" ref={ref}>
       <button
         type="button"
-        className="p2-more-trigger"
+        className="p2-more-trigger p2-more-trigger--circle"
         aria-haspopup="menu"
         aria-expanded={open}
         aria-controls={open ? menuId : undefined}
