@@ -76,12 +76,8 @@ export const accountGroups: AccountGroup[] = coffeeCompanies.map(
   }),
 );
 
-export const permissionsAccounts = [
-  "COMMERCIAL CHECKING (...7890)",
-  "COMMERCIAL CHECKING (...6543)",
-  "TERM LOAN COMMITMENT (...1105)",
-  "COMMERCIAL SAVINGS (...5678)",
-];
+/** Account labels aligned with baseline / Proposal 1 company demo data. */
+export const permissionsAccounts = accountGroups.map((group) => group.label);
 
 export function userById(id: string): ProposalTwoUser | undefined {
   return roster.find((user) => user.id === id);

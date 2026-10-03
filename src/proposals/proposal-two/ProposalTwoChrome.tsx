@@ -43,18 +43,6 @@ export default function ProposalTwoChrome() {
           </button>
         </nav>
       </header>
-      <div className="back-bar">
-        <button
-          type="button"
-          onClick={() => {
-            window.location.assign(window.location.pathname);
-          }}
-        >
-          <Icon src={assets.imgFill5} />
-          Baseline app
-        </button>
-        <div>Access &amp; Security Manager</div>
-      </div>
     </>
   );
 }

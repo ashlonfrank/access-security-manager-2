@@ -12,6 +12,8 @@ import {
   type ProposalTwoUser,
 } from "./proposalTwoDemo";
 import ProposalTwoChrome from "./ProposalTwoChrome";
+import { ChevronDown, ChevronRight } from "./ProposalTwoChevrons";
+import ProposalTwoPermissionsEditor from "./ProposalTwoPermissionsEditor";
 import "./proposal-two.css";
 
 type ViewBy = "user" | "account" | "company";
@@ -79,9 +81,7 @@ function UserTile({
     <button type="button" className="p2-user-tile" onClick={() => onSelect(user.id)}>
       <div className="p2-tile-top">
         <Avatar user={user} />
-        <span className="p2-chevron" aria-hidden="true">
-          ›
-        </span>
+        <ChevronRight className="p2-chevron" />
       </div>
       <p className="p2-tile-name">{user.name}</p>
       <UserStatusRole user={user} />
@@ -118,8 +118,11 @@ function ViewByControl({
   return (
     <div className="p2-view-by" ref={ref}>
       <button type="button" className="p2-view-by-trigger" onClick={onToggle}>
-        View by
-        <strong>{viewByLabels[value]}</strong>
+        <span className="p2-view-by-label">
+          View by
+          <strong>{viewByLabels[value]}</strong>
+        </span>
+        <ChevronDown />
       </button>
       {open ? (
         <div className="p2-view-menu" role="listbox" aria-label="View by">
@@ -180,29 +183,34 @@ function UserPermissionsPage({
   user: ProposalTwoUser;
   onBack: () => void;
 }) {
+  const [companyFilter, setCompanyFilter] = useState("all");
+  const [accountFilter, setAccountFilter] = useState("all");
+
+  const accountOptions = useMemo(() => {
+    if (companyFilter === "all") return permissionsAccounts;
+    const group = accountGroups.find((g) => g.id === `company-${companyFilter}`);
+    return group ? [group.label] : permissionsAccounts;
+  }, [companyFilter]);
+
+  useEffect(() => {
+    setAccountFilter("all");
+  }, [companyFilter]);
+
   const factRows: { label: string; value: string; action: string }[] = [
     { label: "User ID", value: user.userId, action: "Edit user info" },
     { label: "Role", value: user.role, action: "Suspend user" },
     { label: "Job title", value: user.job, action: "Remove user" },
     { label: "Email address", value: user.email, action: "Request token" },
-    {
-      label: "Mobile access",
-      value: user.mobileAccess ? "On" : "Off",
-      action: "Send temporary password",
-    },
-    {
-      label: "Third-party access",
-      value: user.thirdPartyAccess ? "On" : "Off",
-      action: "Copy rights from another user",
-    },
   ];
 
   return (
     <div className="p2-permissions-page">
-      <button type="button" className="p2-details-back" onClick={onBack}>
-        ‹ Back to all users
-      </button>
-      <h1 className="p2-details-title">User details</h1>
+      <div className="p2-details-header">
+        <button type="button" className="p2-details-back" onClick={onBack}>
+          ‹ Back to all users
+        </button>
+        <h1 className="p2-details-title">User details</h1>
+      </div>
       <section className="p2-profile-card" aria-labelledby="p2-user-name">
         <h2 id="p2-user-name" className="p2-profile-name">
           {user.name}
@@ -221,58 +229,47 @@ function UserPermissionsPage({
               </div>
               <button type="button" className="p2-fact-action">
                 {row.action}
-                <span aria-hidden="true"> ›</span>
+                <ChevronRight />
               </button>
             </div>
           ))}
         </div>
       </section>
 
-      <section className="p2-rights-section" aria-labelledby="p2-rights-heading">
-        <div className="p2-rights-head">
-          <h2 id="p2-rights-heading">Manage user rights</h2>
-          <button type="button">Expand all accounts ⇅</button>
-        </div>
+      <section className="p2-rights-section">
         <div className="p2-filters">
           <div className="p2-filter">
             <label htmlFor="p2-company">Company name</label>
-            <select id="p2-company" defaultValue="yale">
-              <option value="yale">YALE</option>
+            <select
+              id="p2-company"
+              value={companyFilter}
+              onChange={(e) => setCompanyFilter(e.target.value)}
+            >
+              <option value="all">All companies</option>
+              {companyGroups.map((group) => (
+                <option key={group.id} value={group.id}>
+                  {group.name}
+                </option>
+              ))}
             </select>
           </div>
           <div className="p2-filter">
             <label htmlFor="p2-account">Account number</label>
-            <select id="p2-account" defaultValue="all">
+            <select
+              id="p2-account"
+              value={accountFilter}
+              onChange={(e) => setAccountFilter(e.target.value)}
+            >
               <option value="all">All accounts</option>
-            </select>
-          </div>
-          <div className="p2-filter">
-            <label htmlFor="p2-service">Service</label>
-            <select id="p2-service" defaultValue="">
-              <option value="">Choose service</option>
+              {accountOptions.map((label) => (
+                <option key={label} value={label}>
+                  {label}
+                </option>
+              ))}
             </select>
           </div>
         </div>
-        <article className="p2-rights-card">
-          <h3>YALE</h3>
-          <p>Company-level rights</p>
-          <ul>
-            <li>Open accounts</li>
-            <li>See, upload, and download account opening documents</li>
-          </ul>
-          <footer>
-            <span aria-hidden="true">?</span>
-            <button type="button">Edit</button>
-          </footer>
-        </article>
-        <div className="p2-account-accordion">
-          {permissionsAccounts.map((label) => (
-            <button key={label} type="button">
-              <span aria-hidden="true">›</span>
-              {label}
-            </button>
-          ))}
-        </div>
+        <ProposalTwoPermissionsEditor user={user} />
       </section>
     </div>
   );
@@ -388,7 +385,6 @@ export default function ProposalTwoApp() {
         <main className="p2-main p2-main-permissions" id="proposal-two-main">
           <UserPermissionsPage user={selectedUser} onBack={closeUser} />
         </main>
-        <BaselineLink />
       </div>
     );
   }
@@ -489,7 +485,7 @@ export default function ProposalTwoApp() {
                     className="p2-show-all"
                     onClick={() => setShowAllUsers(true)}
                   >
-                    Show all <span aria-hidden="true">⌄</span>
+                    Show all <ChevronDown />
                   </button>
                 ) : null}
               </>
@@ -611,22 +607,6 @@ export default function ProposalTwoApp() {
           </>
         )}
       </main>
-      <BaselineLink />
     </div>
-  );
-}
-
-function BaselineLink() {
-  return (
-    <a
-      className="p2-baseline-link"
-      href={window.location.pathname}
-      onClick={(e) => {
-        e.preventDefault();
-        window.location.assign(window.location.pathname);
-      }}
-    >
-      Baseline app
-    </a>
   );
 }
