@@ -6,6 +6,7 @@ import {
   formatAccountLabel,
   visibleAccountsForUser,
 } from "../../demoAccounts";
+import { ChevronDown } from "./ProposalTwoChevrons";
 import { companyGroups } from "./proposalTwoDemo";
 import {
   readStoredPermissions,
@@ -119,39 +120,41 @@ export default function ProposalTwoPermissionsEditor({ user }: { user: User }) {
         <div className="p2-filters">
           <div className="p2-filter">
             <label htmlFor="p2-company">Company name</label>
-            <select
-              id="p2-company"
-              value={companyFilter}
-              onChange={(e) => setCompanyFilter(e.target.value)}
-            >
-              <option value="all">All companies</option>
-              {companyGroups.map((group) => (
-                <option key={group.id} value={group.id}>
-                  {group.name}
-                </option>
-              ))}
-            </select>
+            <div className="p2-select-wrap">
+              <select
+                id="p2-company"
+                value={companyFilter}
+                onChange={(e) => setCompanyFilter(e.target.value)}
+              >
+                <option value="all">All companies</option>
+                {companyGroups.map((group) => (
+                  <option key={group.id} value={group.id}>
+                    {group.name}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown className="p2-select-chevron" />
+            </div>
           </div>
           <div className="p2-filter">
             <label htmlFor="p2-account">Account number</label>
-            <select
-              id="p2-account"
-              value={accountFilter}
-              onChange={(e) => setAccountFilter(e.target.value)}
-            >
-              <option value="all">All accounts</option>
-              {accountOptions.map((account) => (
-                <option key={account.id} value={account.id}>
-                  {formatAccountLabel(account, user.id)}
-                </option>
-              ))}
-            </select>
+            <div className="p2-select-wrap">
+              <select
+                id="p2-account"
+                value={accountFilter}
+                onChange={(e) => setAccountFilter(e.target.value)}
+              >
+                <option value="all">All accounts</option>
+                {accountOptions.map((account) => (
+                  <option key={account.id} value={account.id}>
+                    {formatAccountLabel(account, user.id)}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown className="p2-select-chevron" />
+            </div>
           </div>
         </div>
-        <p className="p2-filter-demo-note">
-          Accounts update with company. User permissions below follow role only (same across
-          accounts), matching Proposal 1.
-        </p>
         <div
           className="permissions-scroll p2-permissions-scroll"
           tabIndex={0}
