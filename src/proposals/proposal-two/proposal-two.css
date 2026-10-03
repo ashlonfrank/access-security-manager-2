@@ -801,6 +801,13 @@
   margin: 16px 16px 8px;
 }
 
+.proposal-two .p2-filter-demo-note {
+  margin: 0 16px 12px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--p2-subdued);
+}
+
 .proposal-two .p2-embedded-permissions .p2-rights-head h2 {
   font-size: 18px;
   margin: 0;

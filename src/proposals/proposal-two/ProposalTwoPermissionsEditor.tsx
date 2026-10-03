@@ -22,7 +22,11 @@ function readPermissions(user: User): Permissions {
   return readStoredPermissions({ id: user.id, role: user.role });
 }
 
-/** Proposal 1 side-panel permission sections, embedded on the Proposal 2 user details page. */
+/**
+ * Proposal 2 user-details permissions.
+ * Demo hierarchy: company → account options (dropdown). Entitlements below stay
+ * role-based like Proposal 1 and do not filter by selected account (kept separate for demo).
+ */
 export default function ProposalTwoPermissionsEditor({ user }: { user: User }) {
   const [editing, setEditing] = useState(false);
   const [value, setValue] = useState<Permissions>(() => readPermissions(user));
@@ -144,6 +148,10 @@ export default function ProposalTwoPermissionsEditor({ user }: { user: User }) {
             </select>
           </div>
         </div>
+        <p className="p2-filter-demo-note">
+          Accounts update with company. User permissions below follow role only (same across
+          accounts), matching Proposal 1.
+        </p>
         <div
           className="permissions-scroll p2-permissions-scroll"
           tabIndex={0}
