@@ -232,6 +232,82 @@ function ListToolbar({
   );
 }
 
+type UserMoreAction = "remove" | "temp-password" | "deactivate";
+
+const userMoreMenuLabels: Record<UserMoreAction, string> = {
+  remove: "Remove user",
+  "temp-password": "Send temporary password",
+  deactivate: "Deactivate user",
+};
+
+function UserMoreMenu({
+  userName,
+  onAction,
+}: {
+  userName: string;
+  onAction: (action: UserMoreAction) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const menuId = "p2-user-more-menu";
+
+  useEffect(() => {
+    if (!open) return;
+    const onDoc = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("mousedown", onDoc);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDoc);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+
+  const run = (action: UserMoreAction) => {
+    onAction(action);
+    setOpen(false);
+  };
+
+  return (
+    <div className="p2-user-more" ref={ref}>
+      <button
+        type="button"
+        className="p2-more-trigger"
+        aria-haspopup="menu"
+        aria-expanded={open}
+        aria-controls={open ? menuId : undefined}
+        onClick={() => setOpen((v) => !v)}
+      >
+        <span className="visually-hidden">More actions for {userName}</span>
+        <span aria-hidden="true">More</span>
+        <span className="p2-more-ellipsis" aria-hidden="true">
+          ⋯
+        </span>
+      </button>
+      {open ? (
+        <ul className="p2-more-menu" id={menuId} role="menu" aria-label={`More actions for ${userName}`}>
+          {(Object.keys(userMoreMenuLabels) as UserMoreAction[]).map((action) => (
+            <li key={action} role="none">
+              <button
+                type="button"
+                role="menuitem"
+                className={action === "remove" ? "p2-more-menu-danger" : undefined}
+                onClick={() => run(action)}
+              >
+                {userMoreMenuLabels[action]}
+              </button>
+            </li>
+          ))}
+        </ul>
+      ) : null}
+    </div>
+  );
+}
+
 /** Figma 77:19563 — full-page user permissions (no side panel). */
 function UserPermissionsPage({
   user,
@@ -240,22 +316,33 @@ function UserPermissionsPage({
   user: ProposalTwoUser;
   onBack: () => void;
 }) {
-  const factRows: { label: string; value: string; action: string }[] = [
-    { label: "User ID", value: user.userId, action: "Edit user info" },
-    { label: "Role", value: user.role, action: "Suspend user" },
-    { label: "Phone number", value: user.phone, action: "Remove user" },
-    { label: "Email address", value: user.email, action: "Request token" },
+  const [toast, setToast] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!toast) return;
+    const timer = window.setTimeout(() => setToast(null), 3200);
+    return () => window.clearTimeout(timer);
+  }, [toast]);
+
+  const factRows: { label: string; value: string }[] = [
+    { label: "User ID", value: user.userId },
+    { label: "Role", value: user.role },
+    { label: "Phone number", value: user.phone },
+    { label: "Email address", value: user.email },
     {
       label: "Mobile access",
       value: user.mobileAccess ? "On" : "Off",
-      action: "Send temporary password",
     },
     {
       label: "Third-party access",
       value: user.thirdPartyAccess ? "On" : "Off",
-      action: "Copy rights from another user",
     },
   ];
+
+  const onMoreAction = (action: UserMoreAction) => {
+    const label = userMoreMenuLabels[action];
+    setToast(`${label} — demo action for ${user.name}`);
+  };
 
   return (
     <div className="p2-permissions-page">
@@ -264,10 +351,15 @@ function UserPermissionsPage({
       </button>
       <h1 className="p2-details-title">User details</h1>
       <section className="p2-profile-card" aria-labelledby="p2-user-name">
-        <h2 id="p2-user-name" className="p2-profile-name">
-          {user.name}
-        </h2>
-        <p className="p2-active">✓ {user.status}</p>
+        <div className="p2-profile-head">
+          <div>
+            <h2 id="p2-user-name" className="p2-profile-name">
+              {user.name}
+            </h2>
+            <p className="p2-active">✓ {user.status}</p>
+          </div>
+          <UserMoreMenu userName={user.name} onAction={onMoreAction} />
+        </div>
         <div className="p2-fact-rows">
           {factRows.map((row) => (
             <div key={row.label} className="p2-fact-row">
@@ -275,14 +367,15 @@ function UserPermissionsPage({
                 <span className="p2-fact-term">{row.label}</span>
                 <span className="p2-fact-value">{row.value}</span>
               </div>
-              <button type="button" className="p2-fact-action">
-                {row.action}
-                <span aria-hidden="true"> ›</span>
-              </button>
             </div>
           ))}
         </div>
       </section>
+      {toast ? (
+        <div className="toast" role="status" aria-live="polite">
+          <span>{toast}</span>
+        </div>
+      ) : null}
 
       <section className="p2-rights-section" aria-labelledby="p2-rights-heading">
         <div className="p2-rights-head">
