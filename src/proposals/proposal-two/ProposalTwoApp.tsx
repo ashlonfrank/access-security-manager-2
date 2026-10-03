@@ -193,7 +193,7 @@ function UserPermissionsPage({
         <button type="button" className="p2-details-back" onClick={onBack}>
           ‹ Back to all users
         </button>
-        <h1 className="p2-details-title">User details</h1>
+        <h1 className="p2-details-title">User permissions</h1>
       </div>
       <section className="p2-profile-card" aria-labelledby="p2-user-name">
         <h2 id="p2-user-name" className="p2-profile-name">
