@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import permissionAssets from "../../permission-assets.json";
 import type { User } from "../../App";
+import { companyIndex } from "../../business";
+import { companyGroups } from "./proposalTwoDemo";
 import {
-  accountGroups,
-  companyGroups,
-  permissionsAccounts,
-} from "./proposalTwoDemo";
+  formatAccountLabel,
+  visibleAccountsForUser,
+} from "../../demoAccounts";
 import {
   readStoredPermissions,
   permissionsStorageKey,
@@ -17,42 +18,50 @@ import {
   PermissionCategoriesEditor,
 } from "../../permissionUi";
 
-function readPermissions(id: string): Permissions {
-  return readStoredPermissions(id);
+function readPermissions(user: User): Permissions {
+  return readStoredPermissions({ id: user.id, role: user.role });
 }
 
 /** Proposal 1 side-panel permission sections, embedded on the Proposal 2 user details page. */
 export default function ProposalTwoPermissionsEditor({ user }: { user: User }) {
   const [editing, setEditing] = useState(false);
-  const [value, setValue] = useState<Permissions>(() => readPermissions(user.id));
+  const [value, setValue] = useState<Permissions>(() => readPermissions(user));
   const [error, setError] = useState("");
-  const [companyFilter, setCompanyFilter] = useState("all");
+  const [companyFilter, setCompanyFilter] = useState(() =>
+    String(companyIndex(user.id)),
+  );
   const [accountFilter, setAccountFilter] = useState("all");
 
-  const accountOptions = useMemo(() => {
-    if (companyFilter === "all") return permissionsAccounts;
-    const group = accountGroups.find((g) => g.id === `company-${companyFilter}`);
-    return group ? [group.label] : permissionsAccounts;
-  }, [companyFilter]);
+  const companyIdx = useMemo(() => {
+    if (companyFilter === "all") return companyIndex(user.id);
+    const parsed = Number(companyFilter);
+    return Number.isFinite(parsed) ? parsed : companyIndex(user.id);
+  }, [companyFilter, user.id]);
+
+  const entitledAccounts = useMemo(
+    () => visibleAccountsForUser(user.id, user.role, value, companyIdx),
+    [user.id, user.role, value, companyIdx],
+  );
 
   useEffect(() => {
-    setValue(readPermissions(user.id));
+    setValue(readPermissions(user));
     setEditing(false);
     setError("");
-  }, [user.id]);
+    setCompanyFilter(String(companyIndex(user.id)));
+  }, [user.id, user.role]);
 
   useEffect(() => {
     setAccountFilter("all");
   }, [companyFilter]);
 
   function beginEdit() {
-    setValue(readPermissions(user.id));
+    setValue(readPermissions(user));
     setError("");
     setEditing(true);
   }
 
   function cancelEdit() {
-    setValue(readPermissions(user.id));
+    setValue(readPermissions(user));
     setEditing(false);
     setError("");
   }
@@ -69,7 +78,16 @@ export default function ProposalTwoPermissionsEditor({ user }: { user: User }) {
   }
 
   return (
-    <EditorContext.Provider value={{ editing, value, setValue }}>
+    <EditorContext.Provider
+      value={{
+        editing,
+        value,
+        setValue,
+        userId: user.id,
+        role: user.role,
+        companyIndex: companyIdx,
+      }}
+    >
       <div
         className={`p2-embedded-permissions permissions-panel ${editing ? "editing-permissions" : ""}`}
         aria-label={`Permissions for ${user.name}`}
@@ -118,9 +136,9 @@ export default function ProposalTwoPermissionsEditor({ user }: { user: User }) {
               onChange={(e) => setAccountFilter(e.target.value)}
             >
               <option value="all">All accounts</option>
-              {accountOptions.map((label) => (
-                <option key={label} value={label}>
-                  {label}
+              {entitledAccounts.map((account) => (
+                <option key={account.id} value={account.id}>
+                  {formatAccountLabel(account, user.id)}
                 </option>
               ))}
             </select>
