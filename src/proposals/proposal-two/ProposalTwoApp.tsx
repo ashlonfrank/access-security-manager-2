@@ -10,7 +10,7 @@ import {
 import "./proposal-two.css";
 
 type ViewBy = "user" | "account" | "company";
-type Screen = "list" | "search";
+type Screen = "list" | "search" | "permissions";
 
 const viewByLabels: Record<ViewBy, string> = {
   user: "By user",
@@ -232,53 +232,54 @@ function ListToolbar({
   );
 }
 
-function UserDetailPanel({
+/** Figma 77:19563 — full-page user permissions (no side panel). */
+function UserPermissionsPage({
   user,
   onBack,
 }: {
   user: ProposalTwoUser;
   onBack: () => void;
 }) {
-  const detailActions = [
-    "Edit user info",
-    "Suspend user",
-    "Remove user",
-    "Request token",
-    "Send temporary password",
-    "Copy rights from another user",
+  const factRows: { label: string; value: string; action: string }[] = [
+    { label: "User ID", value: user.userId, action: "Edit user info" },
+    { label: "Role", value: user.role, action: "Suspend user" },
+    { label: "Phone number", value: user.phone, action: "Remove user" },
+    { label: "Email address", value: user.email, action: "Request token" },
+    {
+      label: "Mobile access",
+      value: user.mobileAccess ? "On" : "Off",
+      action: "Send temporary password",
+    },
+    {
+      label: "Third-party access",
+      value: user.thirdPartyAccess ? "On" : "Off",
+      action: "Copy rights from another user",
+    },
   ];
 
   return (
-    <div className="p2-detail-panel">
+    <div className="p2-permissions-page">
       <button type="button" className="p2-details-back" onClick={onBack}>
         ‹ Back to all users
       </button>
-      <h2 className="p2-details-title">User details</h2>
+      <h1 className="p2-details-title">User details</h1>
       <section className="p2-profile-card" aria-labelledby="p2-user-name">
         <h2 id="p2-user-name" className="p2-profile-name">
           {user.name}
         </h2>
         <p className="p2-active">✓ {user.status}</p>
-        <dl className="p2-profile-grid">
-          <dt>User ID</dt>
-          <dd>{user.userId}</dd>
-          <dt>Role</dt>
-          <dd>{user.role}</dd>
-          <dt>Phone number</dt>
-          <dd>{user.phone}</dd>
-          <dt>Email address</dt>
-          <dd>{user.email}</dd>
-          <dt>Mobile access</dt>
-          <dd>{user.mobileAccess ? "On" : "Off"}</dd>
-          <dt>Third-party access</dt>
-          <dd>{user.thirdPartyAccess ? "On" : "Off"}</dd>
-        </dl>
-        <div className="p2-action-links">
-          {detailActions.map((label) => (
-            <button key={label} type="button">
-              {label}
-              <span aria-hidden="true">›</span>
-            </button>
+        <div className="p2-fact-rows">
+          {factRows.map((row) => (
+            <div key={row.label} className="p2-fact-row">
+              <div className="p2-fact-row-label">
+                <span className="p2-fact-term">{row.label}</span>
+                <span className="p2-fact-value">{row.value}</span>
+              </div>
+              <button type="button" className="p2-fact-action">
+                {row.action}
+                <span aria-hidden="true"> ›</span>
+              </button>
+            </div>
           ))}
         </div>
       </section>
@@ -334,19 +335,50 @@ function UserDetailPanel({
 }
 
 /** Figma section 77 — Chase Connect tile dashboard (Proposal 2). */
+function readInitialViewBy(): ViewBy {
+  const params = new URLSearchParams(window.location.search);
+  const view = params.get("view");
+  if (view === "company" || view === "account" || view === "user") return view;
+  return "user";
+}
+
+function readInitialScreen(): Screen {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get("view") === "permissions" || params.get("user")) return "permissions";
+  return "list";
+}
+
+function readInitialUserId(): string | null {
+  const params = new URLSearchParams(window.location.search);
+  return params.get("user") ?? (params.get("view") === "permissions" ? "cameron" : null);
+}
+
 export default function ProposalTwoApp() {
-  const [screen, setScreen] = useState<Screen>("list");
-  const [viewBy, setViewBy] = useState<ViewBy>("user");
+  const [screen, setScreen] = useState<Screen>(readInitialScreen);
+  const [viewBy, setViewBy] = useState<ViewBy>(readInitialViewBy);
   const [viewByOpen, setViewByOpen] = useState(false);
-  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(readInitialUserId);
   const [showAllUsers, setShowAllUsers] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedCompanies, setExpandedCompanies] = useState<Record<string, boolean>>(
     {},
   );
-  const [searchPanelOpen, setSearchPanelOpen] = useState(false);
-
   const selectedUser = selectedUserId ? userById(selectedUserId) : undefined;
+
+  const leftRailUsers = useMemo(() => {
+    const james = proposalTwoUsers.find((u) => u.id === "james");
+    if (!james) return [];
+    return Array.from({ length: 4 }, (_, i) => ({ ...james, id: `james-l${i}` }));
+  }, []);
+
+  const sidebarTiles = useMemo(() => {
+    const cameron = proposalTwoUsers[0];
+    return Array.from({ length: 5 }, (_, i) => ({
+      ...cameron,
+      role: "Authorized user" as const,
+      key: `cam-sb-${i}`,
+    }));
+  }, []);
 
   const gridUsers = useMemo(() => {
     const base = showAllUsers
@@ -366,32 +398,24 @@ export default function ProposalTwoApp() {
 
   const openUser = (id: string) => {
     setSelectedUserId(id);
+    setScreen("permissions");
     setViewByOpen(false);
   };
 
-  const closeUser = () => setSelectedUserId(null);
+  const closeUser = () => {
+    setSelectedUserId(null);
+    setScreen("list");
+  };
 
   const openSearch = () => {
     if (viewBy === "company" && screen === "list") {
-      setSearchPanelOpen(true);
-      setSelectedUserId((id) => id ?? "cameron");
+      document.getElementById("p2-company-search")?.focus();
       return;
     }
     setScreen("search");
-    setSearchPanelOpen(false);
-    setSelectedUserId("cameron");
+    setSelectedUserId(null);
     setViewByOpen(false);
   };
-
-  const railUsers = useMemo(() => {
-    const repeat = (user: ProposalTwoUser, count: number) =>
-      Array.from({ length: count }, (_, i) => ({ ...user, id: `${user.id}-r${i}` }));
-    return [
-      ...repeat(proposalTwoUsers[1], 3),
-      ...repeat(proposalTwoUsers[2], 3),
-      proposalTwoUsers[0],
-    ];
-  }, []);
 
   const denseSearchGrid = useMemo(
     () =>
@@ -402,6 +426,21 @@ export default function ProposalTwoApp() {
     [],
   );
 
+  if (screen === "permissions" && selectedUser) {
+    return (
+      <div className="proposal-two">
+        <a className="skip-link" href="#proposal-two-main">
+          Skip to user details
+        </a>
+        <ConnectChrome onSearchClick={openSearch} />
+        <main className="p2-main p2-main-permissions" id="proposal-two-main">
+          <UserPermissionsPage user={selectedUser} onBack={closeUser} />
+        </main>
+        <BaselineLink />
+      </div>
+    );
+  }
+
   return (
     <div className="proposal-two">
       <a className="skip-link" href="#proposal-two-main">
@@ -410,7 +449,7 @@ export default function ProposalTwoApp() {
       <ConnectChrome onSearchClick={openSearch} />
       <main className="p2-main" id="proposal-two-main">
         {screen === "search" ? (
-          <div className={selectedUser ? "p2-split-3" : "p2-split-2"}>
+          <div className="p2-split-3">
             <aside className="p2-company-rail" aria-label="Company context">
               {companyGroups
                 .filter((g) => g.id === "dane")
@@ -470,9 +509,6 @@ export default function ProposalTwoApp() {
                 ))}
               </div>
             </div>
-            {selectedUser ? (
-              <UserDetailPanel user={selectedUser} onBack={closeUser} />
-            ) : null}
           </div>
         ) : (
           <>
@@ -485,137 +521,117 @@ export default function ProposalTwoApp() {
             />
 
             {viewBy === "user" ? (
-              selectedUser ? (
-                <div className="p2-split-2">
-                  <div className="p2-split-list" aria-label="Users">
-                    {railUsers.map((user) => {
-                      const baseId = user.id.replace(/-r\d+$/, "") || user.id;
-                      return (
-                        <UserTileCompact
-                          key={user.id}
-                          user={user}
-                          selected={selectedUserId === baseId}
-                          onSelect={() => openUser(baseId)}
-                        />
-                      );
-                    })}
-                  </div>
-                  <UserDetailPanel user={selectedUser} onBack={closeUser} />
+              <>
+                <div className="p2-user-grid">
+                  {gridUsers.map((user, index) => (
+                    <UserTile
+                      key={`${user.id}-${index}`}
+                      user={user}
+                      onSelect={openUser}
+                    />
+                  ))}
                 </div>
-              ) : (
-                <>
-                  <div className="p2-user-grid">
-                    {gridUsers.map((user, index) => (
-                      <UserTile
-                        key={`${user.id}-${index}`}
-                        user={user}
-                        onSelect={openUser}
-                      />
-                    ))}
-                  </div>
-                  {!showAllUsers ? (
-                    <button
-                      type="button"
-                      className="p2-show-all"
-                      onClick={() => setShowAllUsers(true)}
-                    >
-                      Show all <span aria-hidden="true">⌄</span>
-                    </button>
-                  ) : null}
-                </>
-              )
+                {!showAllUsers ? (
+                  <button
+                    type="button"
+                    className="p2-show-all"
+                    onClick={() => setShowAllUsers(true)}
+                  >
+                    Show all <span aria-hidden="true">⌄</span>
+                  </button>
+                ) : null}
+              </>
             ) : null}
 
             {viewBy === "company" ? (
-              <div
-                className={
-                  searchPanelOpen ? "p2-split-2" : "p2-company-grid-wrap"
-                }
-              >
-              <div className="p2-company-grid">
-                {companyGroups.map((group) => {
-                  const expanded = expandedCompanies[group.id];
-                  const visibleUsers = expanded ? group.users : group.users.slice(0, 4);
-                  return (
-                    <article key={group.id} className="p2-company-card">
-                      <h2 className="p2-company-head">
-                        {group.name}{" "}
-                        <span>
-                          ({group.accountCount} account
-                          {group.accountCount === 1 ? "" : "s"})
-                        </span>
-                      </h2>
-                      {visibleUsers.map((row) => {
-                        const user = userById(row.userId);
-                        if (!user) return null;
-                        return (
-                          <button
-                            key={`${group.id}-${row.userId}-${row.accountLabel}`}
-                            type="button"
-                            className="p2-company-row"
-                            onClick={() => openUser(user.id)}
-                          >
-                            <div>
-                              <div className="p2-company-user">{user.name}</div>
-                              <div className="p2-company-meta">
-                                {row.role} | {row.accountLabel}
+              <div className="p2-by-company-stage">
+                <aside className="p2-left-rail" aria-label="Recent users">
+                  {leftRailUsers.map((user) => (
+                    <UserTileCompact
+                      key={user.id}
+                      user={user}
+                      selected={false}
+                      onSelect={() => openUser("james")}
+                    />
+                  ))}
+                </aside>
+                <div className="p2-company-grid">
+                  {companyGroups.map((group) => {
+                    const expanded = expandedCompanies[group.id];
+                    const visibleUsers = expanded
+                      ? group.users
+                      : group.users.slice(0, 6);
+                    return (
+                      <article key={group.id} className="p2-company-card">
+                        <h2 className="p2-company-head">
+                          {group.name}{" "}
+                          <span>
+                            ({group.accountCount} account
+                            {group.accountCount === 1 ? "" : "s"})
+                          </span>
+                        </h2>
+                        {visibleUsers.map((row, rowIndex) => {
+                          const user = userById(row.userId);
+                          if (!user) return null;
+                          const roleLabel =
+                            row.role === "Proxy admin" ? "Proxy Admin" : row.role;
+                          return (
+                            <button
+                              key={`${group.id}-${row.userId}-${rowIndex}`}
+                              type="button"
+                              className="p2-company-row"
+                              onClick={() => openUser(user.id)}
+                            >
+                              <div>
+                                <div className="p2-company-user">{user.name}</div>
+                                <div className="p2-company-meta">
+                                  {roleLabel} | {row.accountLabel}
+                                </div>
                               </div>
-                            </div>
-                            <span className="p2-chevron" aria-hidden="true">
-                              ›
-                            </span>
+                              <span className="p2-chevron" aria-hidden="true">
+                                ›
+                              </span>
+                            </button>
+                          );
+                        })}
+                        {!expanded && group.users.length > 6 ? (
+                          <button
+                            type="button"
+                            className="p2-show-more"
+                            onClick={() =>
+                              setExpandedCompanies((prev) => ({
+                                ...prev,
+                                [group.id]: true,
+                              }))
+                            }
+                          >
+                            Show more
                           </button>
-                        );
-                      })}
-                      {!expanded && group.users.length > 4 ? (
-                        <button
-                          type="button"
-                          className="p2-show-more"
-                          onClick={() =>
-                            setExpandedCompanies((prev) => ({
-                              ...prev,
-                              [group.id]: true,
-                            }))
-                          }
-                        >
-                          Show more
-                        </button>
-                      ) : null}
-                    </article>
-                  );
-                })}
-              </div>
-              {searchPanelOpen ? (
+                        ) : null}
+                      </article>
+                    );
+                  })}
+                </div>
                 <aside className="p2-search-sidebar" aria-label="Search users">
-                  <h2>Search authorized users</h2>
                   <label className="p2-search-input-wrap">
                     <span className="visually-hidden">Search authorized users</span>
                     <span aria-hidden="true">⌕</span>
                     <input
+                      id="p2-company-search"
                       type="search"
                       placeholder="Search authorized users"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                     />
                   </label>
-                  <div className="p2-search-meta" style={{ margin: "12px 0" }}>
-                    <span>Sort by: Alphabetical order</span>
-                  </div>
-                  {searchResults.slice(0, 6).map((user, index) => (
-                    <UserTileCompact
-                      key={`${user.id}-sb-${index}`}
+                  {sidebarTiles.map((user) => (
+                    <UserTile
+                      key={user.key}
                       user={user}
-                      selected={selectedUserId === user.id}
-                      onSelect={openUser}
+                      onSelect={() => openUser("cameron")}
                     />
                   ))}
-                  {selectedUser ? (
-                    <div style={{ marginTop: 16 }}>
-                      <UserDetailPanel user={selectedUser} onBack={closeUser} />
-                    </div>
-                  ) : null}
                 </aside>
-              ) : null}
               </div>
             ) : null}
 

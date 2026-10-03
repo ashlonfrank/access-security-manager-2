@@ -33,8 +33,8 @@ export const proposalTwoUsers: ProposalTwoUser[] = [
     id: "cameron",
     name: "Cameron J. Morris",
     role: "Proxy admin",
-    phone: "610-505-1234",
-    email: "cj.morris@gmail.com",
+    phone: "765-876-9911",
+    email: "cameron.morris@gmail.com",
     status: "Active",
     userId: "SU1234",
     mobileAccess: true,
@@ -129,6 +129,16 @@ export const companyGroups: CompanyGroup[] = [
         userId: "peter",
         role: "Authorized user",
         accountLabel: "Money Market account (...3883)",
+      },
+      {
+        userId: "elizabeth",
+        role: "Authorized user",
+        accountLabel: "Business credit card (...6635)",
+      },
+      {
+        userId: "elizabeth",
+        role: "Authorized user",
+        accountLabel: "Business credit card (...6635)",
       },
       {
         userId: "elizabeth",

@@ -197,14 +197,61 @@
   font-size: 14px;
 }
 
-.proposal-two .p2-detail-panel {
+.proposal-two .p2-main-permissions {
+  max-width: 920px;
+}
+
+.proposal-two .p2-permissions-page {
+  width: 100%;
+}
+
+.proposal-two .p2-permissions-page .p2-details-title {
+  text-align: center;
+  font-size: 22px;
+  font-weight: 600;
+  margin: 0 0 28px;
+}
+
+.proposal-two .p2-fact-rows {
+  margin-top: 20px;
+  border-top: 1px solid #eef1f5;
+}
+
+.proposal-two .p2-fact-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 14px 0;
+  border-bottom: 1px solid #eef1f5;
+}
+
+.proposal-two .p2-fact-row-label {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 16px;
+  align-items: baseline;
+  flex: 1;
   min-width: 0;
 }
 
-.proposal-two .p2-detail-panel .p2-details-title {
-  text-align: left;
-  font-size: 20px;
-  margin-bottom: 16px;
+.proposal-two .p2-fact-term {
+  font-size: 14px;
+  color: var(--p2-subdued);
+}
+
+.proposal-two .p2-fact-value {
+  font-size: 14px;
+  font-weight: 600;
+  word-break: break-word;
+}
+
+.proposal-two .p2-fact-action {
+  color: var(--p2-interactive);
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .proposal-two .p2-company-rail {
@@ -215,11 +262,28 @@
   margin-bottom: 12px;
 }
 
+.proposal-two .p2-by-company-stage {
+  display: grid;
+  grid-template-columns: minmax(200px, 240px) minmax(0, 1fr) minmax(260px, 300px);
+  gap: 20px;
+  align-items: start;
+}
+
 .proposal-two .p2-search-sidebar {
-  background: var(--p2-surface);
-  border: 1px solid #dce3ea;
-  border-radius: 8px;
-  padding: 16px;
+  background: var(--p2-canvas);
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  max-height: calc(100vh - 220px);
+  overflow: auto;
+}
+
+.proposal-two .p2-search-sidebar .p2-user-tile {
+  min-height: 130px;
+  margin-bottom: 12px;
+}
+
+.proposal-two .p2-left-rail {
   max-height: calc(100vh - 220px);
   overflow: auto;
 }
