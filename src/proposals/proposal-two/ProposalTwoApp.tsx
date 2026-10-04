@@ -3,7 +3,6 @@ import assets from "../../assets.json";
 import Avatar from "../../Avatar";
 import { isInactive, statusClass } from "../../business";
 import {
-  accountGroups,
   companyGroups,
   defaultPermissionsUserId,
   proposalTwoUsers,
@@ -15,13 +14,14 @@ import { ChevronDown, ChevronRight } from "./ProposalTwoChevrons";
 import ProposalTwoPermissionsEditor from "./ProposalTwoPermissionsEditor";
 import "./proposal-two.css";
 
-type ViewBy = "user" | "account" | "company";
+type ViewBy = "user" | "company";
 type Screen = "list" | "search" | "permissions";
 
+const viewByOptions: ViewBy[] = ["user", "company"];
+
 const viewByLabels: Record<ViewBy, string> = {
-  user: "By user",
-  account: "By account",
-  company: "By company",
+  user: "User",
+  company: "Companies",
 };
 
 function Icon({ src }: { src: string }) {
@@ -121,11 +121,11 @@ function ViewByControl({
           View by
           <strong>{viewByLabels[value]}</strong>
         </span>
-        <ChevronDown />
+        <ChevronDown className="p2-view-by-chevron" />
       </button>
       {open ? (
         <div className="p2-view-menu" role="listbox" aria-label="View by">
-          {(["user", "account", "company"] as ViewBy[]).map((option) => (
+          {viewByOptions.map((option) => (
             <button
               key={option}
               type="button"
@@ -231,7 +231,7 @@ function UserPermissionsPage({
 function readInitialViewBy(): ViewBy {
   const params = new URLSearchParams(window.location.search);
   const view = params.get("view");
-  if (view === "company" || view === "account" || view === "user") return view;
+  if (view === "company") return "company";
   return "user";
 }
 
@@ -528,33 +528,6 @@ export default function ProposalTwoApp() {
                     />
                   ))}
                 </aside>
-              </div>
-            ) : null}
-
-            {viewBy === "account" ? (
-              <div className="p2-account-grid">
-                {accountGroups.map((group) => (
-                  <article key={group.id} className="p2-company-card">
-                    <h2 className="p2-company-head">{group.label}</h2>
-                    {group.users.map((row) => {
-                      const user = userById(row.userId);
-                      if (!user) return null;
-                      return (
-                        <button
-                          key={`${group.id}-${row.userId}`}
-                          type="button"
-                          className="p2-company-row"
-                          onClick={() => openUser(user.id)}
-                        >
-                          <div>
-                            <div className="p2-company-user">{user.name}</div>
-                            <div className="p2-company-meta">{row.role}</div>
-                          </div>
-                        </button>
-                      );
-                    })}
-                  </article>
-                ))}
               </div>
             ) : null}
           </>
