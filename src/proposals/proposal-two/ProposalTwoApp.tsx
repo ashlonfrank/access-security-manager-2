@@ -215,7 +215,6 @@ function UserPermissionsPage({
               </div>
               <button type="button" className="p2-fact-action">
                 {row.action}
-                <ChevronRight />
               </button>
             </div>
           ))}
