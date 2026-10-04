@@ -723,18 +723,12 @@
 .proposal-two .p2-fact-action {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
   font-size: 14px;
   line-height: 20px;
   font-weight: 600;
   color: var(--p2-interactive);
   flex-shrink: 0;
   padding: 4px 0;
-}
-
-.proposal-two .p2-fact-action .p2-chevron-icon {
-  width: 16px;
-  height: 16px;
 }
 
 .proposal-two .p2-profile-card {
