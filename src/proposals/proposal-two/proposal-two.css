@@ -439,7 +439,7 @@
 }
 
 .proposal-two .p2-view-by-trigger strong {
-  font-size: var(--p2-font-emphasis);
+  font-size: 20px;
   line-height: 1.5;
   color: #0f171f;
   font-weight: 600;
