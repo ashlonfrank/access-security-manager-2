@@ -22,10 +22,15 @@
   --p2-success: #16695f;
   --p2-success-bg: #eafbf7;
   --p2-tab-active: #005eb8;
+  /* Type scale: 14px default body; 16px for emphasis (names, View by value). */
+  --p2-font-body: 14px;
+  --p2-font-emphasis: 16px;
   min-height: 100vh;
   background: var(--p2-canvas);
   color: #0f171f;
   font-family: "Open Sans", sans-serif;
+  font-size: var(--p2-font-body);
+  line-height: 1.5;
 }
 
 .proposal-two .p2-connect-header {
@@ -404,7 +409,7 @@
 }
 
 .proposal-two .p2-view-by-trigger {
-  font-size: 12px;
+  font-size: var(--p2-font-body);
   color: var(--p2-subdued);
   min-width: 140px;
   padding: 6px 0;
@@ -420,7 +425,8 @@
 }
 
 .proposal-two .p2-view-by-kicker {
-  line-height: 16px;
+  font-size: var(--p2-font-body);
+  line-height: 1.5;
 }
 
 .proposal-two .p2-view-by-value-row {
@@ -429,11 +435,12 @@
   justify-content: space-between;
   gap: 12px;
   width: 100%;
-  line-height: 20px;
+  line-height: 1.5;
 }
 
 .proposal-two .p2-view-by-trigger strong {
-  font-size: 14px;
+  font-size: var(--p2-font-emphasis);
+  line-height: 1.5;
   color: #0f171f;
   font-weight: 600;
 }
@@ -456,7 +463,8 @@
   width: 100%;
   text-align: left;
   padding: 10px 16px;
-  font-size: 14px;
+  font-size: var(--p2-font-body);
+  line-height: 1.5;
 }
 
 .proposal-two .p2-view-menu button[aria-selected="true"] {
@@ -543,7 +551,7 @@
 }
 
 .proposal-two .p2-tile-name {
-  font-size: 16px;
+  font-size: var(--p2-font-emphasis);
   line-height: 1.5;
   font-weight: 600;
   color: var(--p2-interactive);
@@ -567,7 +575,7 @@
 }
 
 .proposal-two .p2-contact {
-  font-size: 14px;
+  font-size: var(--p2-font-body);
   line-height: 1.5;
   color: var(--p2-subdued);
 }
