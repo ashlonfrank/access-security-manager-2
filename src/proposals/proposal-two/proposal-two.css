@@ -543,7 +543,8 @@
 }
 
 .proposal-two .p2-tile-name {
-  font-size: 15px;
+  font-size: 16px;
+  line-height: 1.5;
   font-weight: 600;
   color: var(--p2-interactive);
   margin: 0;
@@ -567,8 +568,8 @@
 
 .proposal-two .p2-contact {
   font-size: 14px;
+  line-height: 1.5;
   color: var(--p2-subdued);
-  line-height: 20px;
 }
 
 .proposal-two .p2-show-all {
