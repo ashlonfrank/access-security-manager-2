@@ -1018,8 +1018,8 @@
 }
 
 .proposal-two .p2-embedded-permissions .p2-rights-head-actions .permission-edit .p2-chevron-icon {
-  width: 16px;
-  height: 16px;
+  width: 12px;
+  height: 12px;
   display: block;
   flex-shrink: 0;
   color: var(--p2-interactive);
@@ -1186,4 +1186,39 @@
   .proposal-two .p2-search-meta {
     display: none;
   }
+}
+
+/* User permissions page: body and badges at 14px; nothing under 12px. */
+.proposal-two .p2-main-permissions {
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.proposal-two .p2-main-permissions .status-tag,
+.proposal-two .p2-main-permissions .role-tag,
+.proposal-two .p2-main-permissions .permission-small-tag,
+.proposal-two .p2-main-permissions .p2-filter-label,
+.proposal-two .p2-main-permissions .p2-rights-head button,
+.proposal-two .p2-main-permissions .permission-info h3,
+.proposal-two .p2-main-permissions .permission-details > h3,
+.proposal-two .p2-main-permissions .permission-accounts > h3,
+.proposal-two .p2-main-permissions .permission-info dt,
+.proposal-two .p2-main-permissions .permission-info dd,
+.proposal-two .p2-main-permissions .category-heading h4,
+.proposal-two .p2-main-permissions .category-heading p,
+.proposal-two .p2-main-permissions .permission-item,
+.proposal-two .p2-main-permissions .permission-item .daily-limit,
+.proposal-two .p2-main-permissions .permission-item .limit-value,
+.proposal-two .p2-main-permissions .permission-accounts li,
+.proposal-two .p2-main-permissions .permission-accounts li > span,
+.proposal-two .p2-main-permissions .role-picker,
+.proposal-two .p2-main-permissions .role-picker-trigger,
+.proposal-two .p2-main-permissions .role-picker-option,
+.proposal-two .p2-main-permissions .role-picker-option > span,
+.proposal-two .p2-main-permissions .authentication-editor legend,
+.proposal-two .p2-main-permissions .permission-option,
+.proposal-two .p2-main-permissions .permission-auth-implied,
+.proposal-two .p2-main-permissions .permission-feedback {
+  font-size: 14px;
+  line-height: 20px;
 }
