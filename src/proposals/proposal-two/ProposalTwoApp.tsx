@@ -10,7 +10,7 @@ import {
   type ProposalTwoUser,
 } from "./proposalTwoDemo";
 import ProposalTwoChrome from "./ProposalTwoChrome";
-import { ChevronDown, ChevronRight } from "./ProposalTwoChevrons";
+import { ChevronDown, ChevronLeft, ChevronRight } from "./ProposalTwoChevrons";
 import ProposalTwoPermissionsEditor from "./ProposalTwoPermissionsEditor";
 import "./proposal-two.css";
 
@@ -193,7 +193,8 @@ function UserPermissionsPage({
     <div className="p2-permissions-page">
       <div className="p2-details-header">
         <button type="button" className="p2-details-back" onClick={onBack}>
-          ‹ Back to all users
+          <ChevronLeft className="p2-details-back-chevron" />
+          <span>Back to all users</span>
         </button>
         <h1 className="p2-details-title">User permissions</h1>
       </div>

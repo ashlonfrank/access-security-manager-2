@@ -13,6 +13,19 @@ export function ChevronRight({ className = "" }: { className?: string }) {
   );
 }
 
+/** 16×16 back chevron — navigation affordance on details header. */
+export function ChevronLeft({ className = "" }: { className?: string }) {
+  return (
+    <img
+      className={`p2-chevron-icon ${className}`.trim()}
+      src={assets.imgNavigationIcoChevronLeft}
+      alt=""
+      width={16}
+      height={16}
+    />
+  );
+}
+
 /** 16×16 dropdown chevron — same as baseline filter / control affordances. */
 export function ChevronDown({ className = "" }: { className?: string }) {
   return (
