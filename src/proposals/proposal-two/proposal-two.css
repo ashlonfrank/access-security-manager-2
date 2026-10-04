@@ -753,6 +753,19 @@
   white-space: nowrap;
 }
 
+.proposal-two .p2-chevron-icon {
+  display: block;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  color: var(--p2-subdued);
+}
+
+.proposal-two .p2-details-back .p2-chevron-icon,
+.proposal-two .p2-details-back-chevron {
+  color: var(--p2-interactive);
+}
+
 .proposal-two .p2-details-back {
   color: var(--p2-interactive);
   font-size: 14px;
@@ -856,6 +869,49 @@
   background: #ffffff;
 }
 
+/* Align permission blocks with page “User permissions” title (main gutter only). */
+.proposal-two .p2-embedded-permissions .p2-rights-head,
+.proposal-two .p2-embedded-permissions .p2-filters {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.proposal-two .p2-embedded-permissions .p2-filters {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.proposal-two .p2-embedded-permissions .permission-info,
+.proposal-two .p2-embedded-permissions .permission-details,
+.proposal-two .p2-embedded-permissions .permission-accounts {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.proposal-two .p2-embedded-permissions .permission-details > h3,
+.proposal-two .p2-embedded-permissions .permission-info h3,
+.proposal-two .p2-embedded-permissions .permission-accounts > h3 {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.proposal-two .p2-embedded-permissions .category-heading {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.proposal-two .p2-embedded-permissions .permission-item {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.proposal-two .p2-embedded-permissions .permission-accounts {
+  margin-left: 0;
+  margin-right: 0;
+  padding-left: 0;
+  padding-right: 0;
+}
+
 .proposal-two .p2-embedded-permissions .permission-category ul {
   display: block;
 }
@@ -882,7 +938,7 @@
   justify-content: space-between;
   align-items: center;
   gap: 16px;
-  padding: 16px 16px 0;
+  padding: 16px 0 0;
   margin-bottom: 0;
 }
 
@@ -921,10 +977,12 @@
   background: #f5f9fd;
 }
 
-.proposal-two .p2-embedded-permissions .p2-rights-head-actions .permission-edit img {
+.proposal-two .p2-embedded-permissions .p2-rights-head-actions .permission-edit .p2-chevron-icon {
   width: 16px;
   height: 16px;
   display: block;
+  flex-shrink: 0;
+  color: var(--p2-interactive);
 }
 
 .proposal-two .p2-embedded-permissions .p2-rights-head-actions .permission-edit.primary-button {

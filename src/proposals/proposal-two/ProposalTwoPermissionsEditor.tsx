@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import permissionAssets from "../../permission-assets.json";
 import type { User } from "../../App";
+import { ChevronDown } from "./ProposalTwoChevrons";
 import { companyIndex, statusClass } from "../../business";
 import {
   formatAccountLabel,
@@ -119,7 +119,7 @@ export default function ProposalTwoPermissionsEditor({ user }: { user: User }) {
             ) : (
               <button type="button" className="permission-edit" onClick={beginEdit}>
                 Edit
-                <img src={permissionAssets.imgMask} alt="" />
+                <ChevronDown className="p2-edit-chevron" />
               </button>
             )}
           </div>
