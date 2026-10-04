@@ -233,6 +233,10 @@
 
 .proposal-two .p2-fact-rows {
   margin-top: 20px;
+  margin-left: -24px;
+  margin-right: -24px;
+  padding-left: 24px;
+  padding-right: 24px;
   border-top: 1px solid #eef1f5;
 }
 
@@ -243,6 +247,10 @@
   gap: 24px;
   padding: 14px 0;
   border-bottom: 1px solid #eef1f5;
+}
+
+.proposal-two .p2-fact-row:last-child {
+  border-bottom: none;
 }
 
 .proposal-two .p2-fact-row-label {
@@ -930,6 +938,8 @@
   width: 100%;
   font-size: 14px;
   line-height: 20px;
+  align-items: center;
+  gap: 8px;
 }
 
 .proposal-two .p2-picker-value {
@@ -939,10 +949,15 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   text-align: left;
+  line-height: 20px;
 }
 
-.proposal-two .p2-picker-chevron {
+.proposal-two .p2-solid-picker .p2-picker-chevron {
+  width: 16px;
+  height: 16px;
   flex-shrink: 0;
+  align-self: center;
+  transform: translateY(-2px);
 }
 
 .proposal-two .p2-view-by-trigger .p2-chevron-icon {
