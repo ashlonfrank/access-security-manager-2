@@ -953,10 +953,17 @@
   color: #0f171f;
 }
 
+/* Dividers span the card, same as the Role / Job title rule on the profile card. */
+.proposal-two .p2-embedded-permissions .permission-info::after {
+  left: -24px;
+  right: -24px;
+  background: #eef1f5;
+}
+
 .proposal-two .p2-embedded-permissions .permission-accounts {
-  border-top: 1px solid #d3d9de;
-  margin: 24px 0 12px;
-  padding: 24px 0 0;
+  border-top: 1px solid #eef1f5;
+  margin: 24px -24px 12px;
+  padding: 24px 24px 0;
 }
 
 .proposal-two .p2-embedded-permissions .permission-accounts li {
