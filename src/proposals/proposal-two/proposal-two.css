@@ -564,10 +564,17 @@
   margin-top: 20px;
   color: var(--p2-interactive);
   font-size: 14px;
+  line-height: 20px;
   font-weight: 600;
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  padding: 0;
+}
+
+/* imgMask chevron glyph sits low in the 16×16 asset — nudge up against label cap height */
+.proposal-two .p2-show-all-chevron {
+  transform: translateY(-2px);
 }
 
 .proposal-two .p2-company-grid-wrap .p2-company-grid,

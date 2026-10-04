@@ -437,7 +437,8 @@ export default function ProposalTwoApp() {
                     className="p2-show-all"
                     onClick={() => setShowAllUsers(true)}
                   >
-                    Show all <ChevronDown />
+                    <span>Show all</span>
+                    <ChevronDown className="p2-show-all-chevron" />
                   </button>
                 ) : null}
               </>
