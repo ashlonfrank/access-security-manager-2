@@ -433,8 +433,73 @@
 .proposal-two .p2-page-title {
   font-size: 28px;
   font-weight: 600;
-  margin: 0 0 24px;
+  margin: 0;
   letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+
+.proposal-two .p2-list-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.proposal-two .p2-manage-title {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.35em;
+}
+
+.proposal-two .p2-manage-scope {
+  position: relative;
+  display: inline-flex;
+}
+
+.proposal-two .p2-manage-scope-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0;
+  font: inherit;
+  font-weight: inherit;
+  letter-spacing: inherit;
+  color: var(--p2-interactive);
+}
+
+.proposal-two .p2-manage-scope-chevron {
+  transform: translateY(-2px);
+}
+
+.proposal-two .p2-manage-scope-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  min-width: 160px;
+  background: var(--p2-surface);
+  border: 1px solid var(--p2-border);
+  border-radius: 4px;
+  box-shadow: 0 8px 24px rgba(15, 23, 31, 0.12);
+  z-index: 20;
+  padding: 4px 0;
+}
+
+.proposal-two .p2-manage-scope-menu button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 10px 16px;
+  font-size: var(--p2-font-body);
+  line-height: 1.5;
+}
+
+.proposal-two .p2-manage-scope-menu button[aria-selected="true"] {
+  background: #e8f2fb;
+  color: var(--p2-interactive);
+  font-weight: 600;
 }
 
 .proposal-two .p2-toolbar {

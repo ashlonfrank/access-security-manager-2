@@ -19,8 +19,8 @@ type Screen = "list" | "search" | "permissions";
 
 const viewByOptions: ViewBy[] = ["user", "company"];
 
-const viewByLabels: Record<ViewBy, string> = {
-  user: "User",
+const manageScopeLabels: Record<ViewBy, string> = {
+  user: "Users",
   company: "Companies",
 };
 
@@ -66,7 +66,7 @@ function UserTile({
   );
 }
 
-function ViewByControl({
+function ManageScopeHeading({
   value,
   open,
   onToggle,
@@ -89,63 +89,70 @@ function ViewByControl({
   }, [open, onToggle]);
 
   return (
-    <div className="p2-view-by" ref={ref}>
-      <button type="button" className="p2-view-by-trigger" onClick={onToggle}>
-        <span className="p2-view-by-label">
-          <span className="p2-view-by-kicker">View by</span>
-          <span className="p2-view-by-value-row">
-            <strong>{viewByLabels[value]}</strong>
-            <ChevronDown className="p2-view-by-chevron" />
-          </span>
-        </span>
-      </button>
-      {open ? (
-        <div className="p2-view-menu" role="listbox" aria-label="View by">
-          {viewByOptions.map((option) => (
-            <button
-              key={option}
-              type="button"
-              role="option"
-              aria-selected={value === option}
-              onClick={() => {
-                onChange(option);
-                onToggle();
-              }}
-            >
-              {viewByLabels[option]}
-            </button>
-          ))}
-        </div>
-      ) : null}
-    </div>
+    <h1 className="p2-page-title p2-manage-title">
+      Manage{" "}
+      <span className="p2-manage-scope" ref={ref}>
+        <button
+          type="button"
+          className="p2-manage-scope-trigger"
+          aria-haspopup="listbox"
+          aria-expanded={open}
+          aria-label={`Manage ${manageScopeLabels[value]}. Change scope.`}
+          onClick={onToggle}
+        >
+          {manageScopeLabels[value]}
+          <ChevronDown className="p2-manage-scope-chevron" />
+        </button>
+        {open ? (
+          <div
+            className="p2-manage-scope-menu"
+            role="listbox"
+            aria-label="Manage scope"
+          >
+            {viewByOptions.map((option) => (
+              <button
+                key={option}
+                type="button"
+                role="option"
+                aria-selected={value === option}
+                onClick={() => {
+                  onChange(option);
+                  onToggle();
+                }}
+              >
+                {manageScopeLabels[option]}
+              </button>
+            ))}
+          </div>
+        ) : null}
+      </span>
+    </h1>
   );
 }
 
-function ListToolbar({
+function ListHead({
   viewBy,
-  viewByOpen,
-  onViewByToggle,
+  scopeOpen,
+  onScopeToggle,
   onViewByChange,
 }: {
   viewBy: ViewBy;
-  viewByOpen: boolean;
-  onViewByToggle: () => void;
+  scopeOpen: boolean;
+  onScopeToggle: () => void;
   onViewByChange: (v: ViewBy) => void;
 }) {
   return (
-    <div className="p2-toolbar">
-      <ViewByControl
+    <div className="p2-list-head">
+      <ManageScopeHeading
         value={viewBy}
-        open={viewByOpen}
-        onToggle={onViewByToggle}
+        open={scopeOpen}
+        onToggle={onScopeToggle}
         onChange={onViewByChange}
       />
-      <div className="p2-toolbar-actions">
-        <button type="button" className="primary-button">
-          Add a user
-          <Icon src={assets.imgMask1} />
-        </button>
-      </div>
+      <button type="button" className="primary-button">
+        Add a user
+        <Icon src={assets.imgMask1} />
+      </button>
     </div>
   );
 }
@@ -228,7 +235,7 @@ function readInitialUserId(): string | null {
 export default function ProposalTwoApp() {
   const [screen, setScreen] = useState<Screen>(readInitialScreen);
   const [viewBy, setViewBy] = useState<ViewBy>(readInitialViewBy);
-  const [viewByOpen, setViewByOpen] = useState(false);
+  const [scopeOpen, setScopeOpen] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(readInitialUserId);
   const [showAllUsers, setShowAllUsers] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -256,7 +263,7 @@ export default function ProposalTwoApp() {
   const openUser = (id: string) => {
     setSelectedUserId(id);
     setScreen("permissions");
-    setViewByOpen(false);
+    setScopeOpen(false);
   };
 
   const closeUser = () => {
@@ -267,7 +274,7 @@ export default function ProposalTwoApp() {
   const openSearch = () => {
     setScreen("search");
     setSelectedUserId(null);
-    setViewByOpen(false);
+    setScopeOpen(false);
   };
 
   const denseSearchGrid = useMemo(
@@ -364,11 +371,10 @@ export default function ProposalTwoApp() {
           </div>
         ) : (
           <>
-            <h1 className="p2-page-title">All users</h1>
-            <ListToolbar
+            <ListHead
               viewBy={viewBy}
-              viewByOpen={viewByOpen}
-              onViewByToggle={() => setViewByOpen((v) => !v)}
+              scopeOpen={scopeOpen}
+              onScopeToggle={() => setScopeOpen((v) => !v)}
               onViewByChange={setViewBy}
             />
 
