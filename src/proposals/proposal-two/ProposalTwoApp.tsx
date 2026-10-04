@@ -118,10 +118,12 @@ function ViewByControl({
     <div className="p2-view-by" ref={ref}>
       <button type="button" className="p2-view-by-trigger" onClick={onToggle}>
         <span className="p2-view-by-label">
-          View by
-          <strong>{viewByLabels[value]}</strong>
+          <span className="p2-view-by-kicker">View by</span>
+          <span className="p2-view-by-value-row">
+            <strong>{viewByLabels[value]}</strong>
+            <ChevronDown className="p2-view-by-chevron" />
+          </span>
         </span>
-        <ChevronDown className="p2-view-by-chevron" />
       </button>
       {open ? (
         <div className="p2-view-menu" role="listbox" aria-label="View by">

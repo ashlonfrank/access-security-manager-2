@@ -404,21 +404,32 @@
 }
 
 .proposal-two .p2-view-by-trigger {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
   font-size: 12px;
   color: var(--p2-subdued);
   min-width: 140px;
   padding: 6px 0;
+  text-align: left;
 }
 
 .proposal-two .p2-view-by-label {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 16px;
+  align-items: stretch;
+  gap: 8px;
+  width: 100%;
+}
+
+.proposal-two .p2-view-by-kicker {
+  line-height: 16px;
+}
+
+.proposal-two .p2-view-by-value-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  line-height: 20px;
 }
 
 .proposal-two .p2-view-by-trigger strong {
@@ -555,9 +566,9 @@
 }
 
 .proposal-two .p2-contact {
-  font-size: 12px;
+  font-size: 14px;
   color: var(--p2-subdued);
-  line-height: 1.5;
+  line-height: 20px;
 }
 
 .proposal-two .p2-show-all {
