@@ -43,32 +43,6 @@ function UserStatusRole({ user }: { user: ProposalTwoUser }) {
   );
 }
 
-function UserTileCompact({
-  user,
-  selected,
-  onSelect,
-}: {
-  user: ProposalTwoUser;
-  selected: boolean;
-  onSelect: (id: string) => void;
-}) {
-  return (
-    <button
-      type="button"
-      className="p2-user-tile-compact"
-      aria-current={selected ? "true" : undefined}
-      onClick={() => onSelect(user.id)}
-    >
-      <p className="p2-tile-name">{user.name}</p>
-      <UserStatusRole user={user} />
-      <div className="p2-contact">
-        <div>{user.job}</div>
-        <div>{user.email}</div>
-      </div>
-    </button>
-  );
-}
-
 function UserTile({
   user,
   onSelect,
@@ -263,22 +237,6 @@ export default function ProposalTwoApp() {
   );
   const selectedUser = selectedUserId ? userById(selectedUserId) : undefined;
 
-  const leftRailUsers = useMemo(() => {
-    const seed = proposalTwoUsers.slice(0, 2);
-    return seed.flatMap((user) =>
-      Array.from({ length: 2 }, (_, i) => ({ ...user, id: `${user.id}-l${i}` })),
-    );
-  }, []);
-
-  const sidebarTiles = useMemo(
-    () =>
-      proposalTwoUsers.slice(0, 5).map((user, index) => ({
-        ...user,
-        key: `sb-${user.id}-${index}`,
-      })),
-    [],
-  );
-
   const gridUsers = useMemo(() => {
     const base = showAllUsers
       ? [...proposalTwoUsers, ...proposalTwoUsers.slice(0, 3)]
@@ -307,17 +265,9 @@ export default function ProposalTwoApp() {
   };
 
   const openSearch = () => {
-    if (viewBy === "company" && screen === "list") {
-      document.getElementById("p2-company-search")?.focus();
-      return;
-    }
     setScreen("search");
     setSelectedUserId(null);
     setViewByOpen(false);
-  };
-
-  const openUserFromRail = (id: string) => {
-    openUser(id.replace(/-l\d+$/, ""));
   };
 
   const denseSearchGrid = useMemo(
@@ -447,32 +397,22 @@ export default function ProposalTwoApp() {
             ) : null}
 
             {viewBy === "company" ? (
-              <div className="p2-by-company-stage">
-                <aside className="p2-left-rail" aria-label="Recent users">
-                  {leftRailUsers.map((user) => (
-                    <UserTileCompact
-                      key={user.id}
-                      user={user}
-                      selected={false}
-                      onSelect={openUserFromRail}
-                    />
-                  ))}
-                </aside>
-                <div className="p2-company-grid">
-                  {companyGroups.map((group) => {
-                    const expanded = expandedCompanies[group.id];
-                    const visibleUsers = expanded
-                      ? group.users
-                      : group.users.slice(0, 6);
-                    return (
-                      <article key={group.id} className="p2-company-card">
-                        <h2 className="p2-company-head">
-                          {group.name}{" "}
-                          <span>
-                            ({group.accountCount} account
-                            {group.accountCount === 1 ? "" : "s"})
-                          </span>
-                        </h2>
+              <div className="p2-company-grid">
+                {companyGroups.map((group) => {
+                  const expanded = expandedCompanies[group.id];
+                  const previewCount = 4;
+                  const visibleUsers = expanded
+                    ? group.users
+                    : group.users.slice(0, previewCount);
+                  const hasMore = !expanded && group.users.length > previewCount;
+                  return (
+                    <article key={group.id} className="p2-company-card">
+                      <h2 className="p2-company-head">{group.cardTitle}</h2>
+                      <p className="p2-company-count">
+                        {group.accountCount} account
+                        {group.accountCount === 1 ? "" : "s"}
+                      </p>
+                      <div className="p2-company-rows">
                         {visibleUsers.map((row, rowIndex) => {
                           const user = userById(row.userId);
                           if (!user) return null;
@@ -483,53 +423,35 @@ export default function ProposalTwoApp() {
                               className="p2-company-row"
                               onClick={() => openUser(user.id)}
                             >
-                              <div>
-                                <div className="p2-company-user">{user.name}</div>
-                                <div className="p2-company-meta">
+                              <span>
+                                <span className="p2-company-user">{user.name}</span>
+                                <span className="p2-company-meta">
                                   {row.role} | {row.accountLabel}
-                                </div>
-                              </div>
+                                </span>
+                              </span>
+                              <ChevronRight className="p2-company-chevron" />
                             </button>
                           );
                         })}
-                        {!expanded && group.users.length > 6 ? (
-                          <button
-                            type="button"
-                            className="p2-show-more"
-                            onClick={() =>
-                              setExpandedCompanies((prev) => ({
-                                ...prev,
-                                [group.id]: true,
-                              }))
-                            }
-                          >
-                            Show more
-                          </button>
-                        ) : null}
-                      </article>
-                    );
-                  })}
-                </div>
-                <aside className="p2-search-sidebar" aria-label="Search users">
-                  <label className="p2-search-input-wrap">
-                    <span className="visually-hidden">Search authorized users</span>
-                    <span aria-hidden="true">⌕</span>
-                    <input
-                      id="p2-company-search"
-                      type="search"
-                      placeholder="Search authorized users"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                    />
-                  </label>
-                  {sidebarTiles.map((user) => (
-                    <UserTile
-                      key={user.key}
-                      user={user}
-                      onSelect={(id) => openUser(id)}
-                    />
-                  ))}
-                </aside>
+                      </div>
+                      {hasMore ? (
+                        <button
+                          type="button"
+                          className="p2-show-more"
+                          onClick={() =>
+                            setExpandedCompanies((prev) => ({
+                              ...prev,
+                              [group.id]: true,
+                            }))
+                          }
+                        >
+                          <span>Show more</span>
+                          <ChevronDown className="p2-show-more-chevron" />
+                        </button>
+                      ) : null}
+                    </article>
+                  );
+                })}
               </div>
             ) : null}
           </>

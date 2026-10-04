@@ -5,6 +5,19 @@ import {
   companyIndex,
   normalizeRole,
 } from "../../business";
+import {
+  accountLastFour,
+  accountsForCompany,
+  type AccountProduct,
+} from "../../demoAccounts";
+
+const shortAccountNames: Record<AccountProduct, string> = {
+  checking: "Commercial Checking",
+  savings: "Money Market account",
+  credit_card: "Business credit",
+  payroll: "Payroll",
+  merchant_services: "Merchant services",
+};
 
 export type ProposalTwoUser = User & {
   userId: string;
@@ -31,6 +44,7 @@ export const proposalTwoUsers: ProposalTwoUser[] = roster.filter(
 export type CompanyGroup = {
   id: string;
   name: string;
+  cardTitle: string;
   accountCount: number;
   users: {
     userId: string;
@@ -52,15 +66,20 @@ function usersInCompany(index: number): ProposalTwoUser[] {
 export const companyGroups: CompanyGroup[] = coffeeCompanies.map(
   (company, index) => {
     const members = usersInCompany(index);
+    const accounts = accountsForCompany(index);
     return {
       id: String(index),
       name: `${company.name} · ${company.location}`,
-      accountCount: Math.max(3, members.length + 2),
-      users: members.map((user) => ({
-        userId: user.id,
-        role: user.role,
-        accountLabel: user.job,
-      })),
+      cardTitle: company.location,
+      accountCount: accounts.length,
+      users: members.map((user, memberIndex) => {
+        const account = accounts[memberIndex % accounts.length];
+        return {
+          userId: user.id,
+          role: user.role,
+          accountLabel: `${shortAccountNames[account.product]} (...${accountLastFour(user.id, account.id)})`,
+        };
+      }),
     };
   },
 );
