@@ -180,7 +180,7 @@ function UserPermissionsPage({
       <div className="p2-details-header">
         <button type="button" className="p2-details-back" onClick={onBack}>
           <ChevronLeft className="p2-details-back-chevron" />
-          <span>Back to all users</span>
+          <span>All users</span>
         </button>
         <h1 className="p2-details-title">User permissions</h1>
       </div>
@@ -321,7 +321,7 @@ export default function ProposalTwoApp() {
                 <button
                   type="button"
                   className="p2-back-btn"
-                  aria-label="Back to all users"
+                  aria-label="All users"
                   onClick={() => {
                     setScreen("list");
                     closeUser();
