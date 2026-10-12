@@ -91,10 +91,6 @@ html:has(.proposal-two)::-webkit-scrollbar-corner,
   cursor: default;
 }
 
-.proposal-two header .primary-nav .p2-nav-dummy[aria-current="page"] {
-  box-shadow: inset 0 -3px 0 #fff;
-}
-
 .proposal-two .back-bar {
   background: var(--p2-canvas);
 }
