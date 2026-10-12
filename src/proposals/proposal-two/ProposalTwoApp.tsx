@@ -11,6 +11,7 @@ import {
 import ProposalTwoChrome from "./ProposalTwoChrome";
 import {
   ChevronDown,
+  ChevronDownBold,
   ChevronLeft,
   ChevronRight,
   ChevronUp,
@@ -105,7 +106,7 @@ function ManageScopeHeading({
           onClick={onToggle}
         >
           {manageScopeLabels[value]}
-          <ChevronDown className="p2-manage-scope-chevron" />
+          <ChevronDownBold className="p2-manage-scope-chevron" />
         </button>
         {open ? (
           <div

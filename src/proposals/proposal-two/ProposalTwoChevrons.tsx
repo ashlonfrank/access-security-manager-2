@@ -39,6 +39,25 @@ export function ChevronLeft({ className = "" }: ChevronProps) {
   );
 }
 
+/** Heavier down chevron for Manage Users / Companies scope (stroke, reads bolder at title size). */
+export function ChevronDownBold({ className = "" }: ChevronProps) {
+  return (
+    <svg
+      {...svgBase}
+      className={`p2-chevron-icon ${className}`.trim()}
+    >
+      <path
+        d="M3.5 6.25 8 10.75 12.5 6.25"
+        stroke="currentColor"
+        strokeWidth="2.25"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        fill="none"
+      />
+    </svg>
+  );
+}
+
 /** 16×16 dropdown chevron — inline SVG (controls / Edit). */
 export function ChevronDown({ className = "" }: ChevronProps) {
   return (

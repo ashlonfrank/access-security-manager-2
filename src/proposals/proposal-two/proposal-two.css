@@ -503,7 +503,7 @@ html:has(.proposal-two)::-webkit-scrollbar-corner,
 .proposal-two .p2-manage-scope-trigger {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
   padding: 0;
   font: inherit;
   font-weight: inherit;
@@ -892,20 +892,23 @@ html:has(.proposal-two)::-webkit-scrollbar-corner,
   color: var(--p2-interactive);
 }
 
-/* After global .p2-chevron-icon (16px + subdued) — scope chevron matches Users blue, +25% vs 0.72em. */
+/* After global .p2-chevron-icon — scope chevron: Users blue, +25% vs prior 0.9em / 25px. */
 .proposal-two .p2-manage-scope-trigger .p2-chevron-icon,
 .proposal-two .p2-manage-scope-chevron {
-  width: 0.9em;
-  height: 0.9em;
-  min-width: 25px;
-  min-height: 25px;
+  width: 1.125em;
+  height: 1.125em;
+  min-width: 31px;
+  min-height: 31px;
   color: currentColor;
   align-self: center;
 }
 
 .proposal-two .p2-details-back .p2-chevron-icon,
 .proposal-two .p2-details-back-chevron {
-  color: var(--p2-interactive);
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  color: currentColor;
 }
 
 .proposal-two .p2-details-back {
@@ -916,12 +919,10 @@ html:has(.proposal-two)::-webkit-scrollbar-corner,
   display: inline-flex;
   align-items: center;
   gap: 8px;
-}
-
-.proposal-two .p2-details-back-chevron {
-  width: 16px;
-  height: 16px;
-  flex-shrink: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
 }
 
 .proposal-two .p2-fact-action {
