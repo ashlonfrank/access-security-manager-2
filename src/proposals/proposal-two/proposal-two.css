@@ -511,8 +511,12 @@ html:has(.proposal-two)::-webkit-scrollbar-corner,
   color: var(--p2-interactive);
 }
 
+/* Same 16×16 asset as user tiles; rotate to point down for the scope menu. */
 .proposal-two .p2-manage-scope-chevron {
-  transform: translateY(-2px);
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  transform: rotate(90deg);
 }
 
 .proposal-two .p2-manage-scope-menu {

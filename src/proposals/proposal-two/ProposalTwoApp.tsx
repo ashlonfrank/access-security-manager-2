@@ -100,7 +100,7 @@ function ManageScopeHeading({
           onClick={onToggle}
         >
           {manageScopeLabels[value]}
-          <ChevronDown className="p2-manage-scope-chevron" />
+          <ChevronRight className="p2-manage-scope-chevron" aria-hidden />
         </button>
         {open ? (
           <div
