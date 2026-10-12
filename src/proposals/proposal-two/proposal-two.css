@@ -915,13 +915,12 @@ html:has(.proposal-two)::-webkit-scrollbar-corner,
   align-self: center;
 }
 
-.proposal-two .p2-details-back .p2-chevron-icon,
-.proposal-two .p2-details-back-chevron {
+.proposal-two .p2-back-bar-dummy img,
+.proposal-two .p2-details-back img {
+  display: block;
   width: 16px;
   height: 16px;
   flex-shrink: 0;
-  color: currentColor;
-  overflow: visible;
 }
 
 .proposal-two .p2-details-back {
@@ -931,9 +930,9 @@ html:has(.proposal-two)::-webkit-scrollbar-corner,
   font-weight: 600;
   display: inline-flex;
   align-items: center;
-  min-height: 20px;
-  gap: 8px;
-  padding: 0;
+  gap: 4px;
+  padding: 4px 8px;
+  width: max-content;
   border: 0;
   background: transparent;
   cursor: pointer;

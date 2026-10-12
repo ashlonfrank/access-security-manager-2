@@ -12,7 +12,6 @@ import ProposalTwoChrome from "./ProposalTwoChrome";
 import {
   ChevronDown,
   ChevronDownBold,
-  ChevronLeft,
   ChevronRight,
   ChevronUp,
 } from "./ProposalTwoChevrons";
@@ -179,7 +178,7 @@ function UserPermissionsPage({
     <div className="p2-permissions-page">
       <div className="p2-details-header">
         <button type="button" className="p2-details-back" onClick={onBack}>
-          <ChevronLeft className="p2-details-back-chevron" />
+          <Icon src={assets.imgFill5} />
           <span>All users</span>
         </button>
         <h1 className="p2-details-title">User permissions</h1>
