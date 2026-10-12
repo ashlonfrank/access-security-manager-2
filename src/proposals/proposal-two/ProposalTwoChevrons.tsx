@@ -9,31 +9,41 @@ const svgBase = {
   "aria-hidden": true as const,
 };
 
-/** 16×16 row chevron — inline SVG (same geometry as baseline list). */
+/** 16×16 row chevron — stroke (inset so legs aren’t clipped at viewBox edge). */
 export function ChevronRight({ className = "" }: ChevronProps) {
   return (
     <svg
       {...svgBase}
       className={`p2-chevron-icon ${className}`.trim()}
+      overflow="visible"
     >
       <path
-        d="M5.28 14.65a.75.75 0 0 1-.53-1.28L10.03 8 4.75 2.63a.75.75 0 1 1 1.06-1.06l6.22 5.66a.75.75 0 0 1 0 1.06L5.81 14.6a.75.75 0 0 1-.53.05Z"
-        fill="currentColor"
+        d="M5.25 3.75 10.5 8 5.25 12.25"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        fill="none"
       />
     </svg>
   );
 }
 
-/** 16×16 back chevron — inline SVG (navigation). */
+/** 16×16 back chevron — stroke (matches row chevrons; even leg weight). */
 export function ChevronLeft({ className = "" }: ChevronProps) {
   return (
     <svg
       {...svgBase}
       className={`p2-chevron-icon ${className}`.trim()}
+      overflow="visible"
     >
       <path
-        d="M10.72 14.65a.75.75 0 0 0 .53-1.28L5.97 8l5.28-5.37a.75.75 0 1 0-1.06-1.06L4.19 6.94a.75.75 0 0 0 0 1.06l5.99 5.45a.75.75 0 0 0 .54.2Z"
-        fill="currentColor"
+        d="M10.75 3.75 5.5 8 10.75 12.25"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        fill="none"
       />
     </svg>
   );
