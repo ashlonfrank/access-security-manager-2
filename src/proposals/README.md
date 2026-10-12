@@ -1,10 +1,18 @@
-# Design proposals
+# Proposals
 
-Parallel Figma options live under `proposal-one/` and `proposal-two/`. Each folder owns an app shell (`*App.tsx`) for that option.
+This repository uses **git branches** for each Figma option.
 
-- **Baseline:** open the dev server with no query string — `main.tsx` renders `App`.
-- **Prototype toggle:** `?prototype=proposal-one` or `?prototype=proposal-two` (hash `#prototype=…` also works) renders the matching shell without replacing `main` on the default route.
+## Proposal 2 (`proposal-2` branch)
 
-Git branches `proposal-1` and `proposal-2` track ongoing work per chat; shared domain and design tokens stay in `src/` root (`business.ts`, `styles.css`, `refinements.css`, shared components).
+- **App:** `proposal-two/` (`ProposalTwoApp.tsx`, `proposal-two.css`, …)
+- **Preview:** run `npm run dev` and open **http://127.0.0.1:43123/** — no query string.
+- **Shared modules** (demo accounts, permissions UI, tokens) live under `src/` and are imported by Proposal 2.
 
-**Protected (ASM main only):** do not modify `App.tsx`, `CompaniesView.tsx`, `PermissionsPanel.tsx`, `ApprovalReviewModal.tsx`, or baseline layout CSS from a proposal branch except when ASM main merges a chosen design.
+Build and iterate on **Proposal 2 in the `proposal-2` branch** and this agent; baseline and Proposal 1 are on other branches.
+
+## Other branches
+
+- **`main`** — baseline Access & Security Manager
+- **`proposal-1`** — Figma option 1 shell
+
+Do not add Proposal 2–specific UI outside `src/proposals/proposal-two/` on this branch.

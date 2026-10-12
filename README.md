@@ -2,14 +2,22 @@
 
 React and TypeScript implementation of the [Manage User Figma frame](https://www.figma.com/design/ez8f0DFwJwbAVxi52I0H8J/Access-Management-Folio-Projects?node-id=1-69026&m=dev).
 
-## Run locally
+## Proposal 2 (this branch: `proposal-2`)
+
+This branch is **Proposal 2 only**. The dev server loads `ProposalTwoApp` at the root URL.
 
 ```sh
 npm install
 npm run dev
 ```
 
-Open the URL printed by Vite (normally http://127.0.0.1:5173).
+**Preview:** [http://127.0.0.1:43123/](http://127.0.0.1:43123/) — no `?prototype=` query.
+
+User permissions example: [http://127.0.0.1:43123/?view=permissions&user=69029](http://127.0.0.1:43123/?view=permissions&user=69029)
+
+Baseline and Proposal 1 live on **`main`** and **`proposal-1`**; do not duplicate Proposal 2 UI outside `src/proposals/proposal-two/`.
+
+## Run locally (baseline notes)
 
 ```sh
 npm run build
