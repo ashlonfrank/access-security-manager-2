@@ -34,7 +34,6 @@ export function seedP2AccountAccess(
 
   switch (role) {
     case "Admin":
-    case "CFO":
       accounts.forEach((a) => {
         access[a.id] = true;
       });

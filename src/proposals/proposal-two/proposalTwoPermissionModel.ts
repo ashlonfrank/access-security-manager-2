@@ -1,9 +1,8 @@
 import type { Permissions } from "../../userPermissions";
 
-/** Proposal 2 — eight roles; Admin and CFO share defaults but are distinct options. */
+/** Proposal 2 — seven selectable roles (demo CFO users map to Admin). */
 export const P2_SELECTABLE_ROLES = [
   "Admin",
-  "CFO",
   "Business Partner",
   "Finance Lead",
   "Money Mover",
@@ -17,9 +16,8 @@ export type P2SelectableRole = (typeof P2_SELECTABLE_ROLES)[number];
 export const P2_ROLE_DESCRIPTIONS: Record<P2SelectableRole, string> = {
   Admin:
     "Full access to manage business accounts, payments, and users.",
-  CFO: "Full access to financial accounts, payments, and reporting.",
   "Business Partner":
-    "Can access business accounts, cards, and payment processing services.",
+    "Can manage business accounts, payments, cards, and merchant services.",
   "Finance Lead":
     "Can manage day-to-day finances, payments, and payroll.",
   "Money Mover":
@@ -70,7 +68,6 @@ export function allP2EntitlementKeys(): string[] {
 
 const PREDEFINED_ROLES = new Set<string>([
   "Admin",
-  "CFO",
   "Business Partner",
   "Finance Lead",
   "Money Mover",
@@ -81,30 +78,28 @@ const PREDEFINED_ROLES = new Set<string>([
 const MONEY_ENABLED_BY_ROLE: Record<string, readonly string[]> = {
   "Chase QuickDeposit": [
     "Admin",
-    "CFO",
     "Finance Lead",
     "Money Mover",
     "Accountant",
   ],
-  "ACH payments": ["Admin", "CFO", "Finance Lead", "Money Mover"],
-  "ACH vendor payments": ["Admin", "CFO", "Finance Lead", "Money Mover"],
-  "Bill pay": ["Admin", "CFO", "Finance Lead", "Money Mover"],
+  "ACH payments": ["Admin", "Finance Lead", "Money Mover"],
+  "ACH vendor payments": ["Admin", "Finance Lead", "Money Mover"],
+  "Bill pay": ["Admin", "Finance Lead", "Money Mover"],
   "CashFlow 360": [
     "Admin",
-    "CFO",
     "Finance Lead",
     "Money Mover",
     "Accountant",
   ],
-  "Transfers and payments": ["Admin", "CFO", "Money Mover"],
-  Wires: ["Admin", "CFO", "Money Mover"],
-  Zelle: ["Admin", "CFO", "Money Mover"],
-  Payroll: ["Admin", "CFO", "Finance Lead", "Money Mover"],
+  "Transfers and payments": ["Admin", "Money Mover"],
+  Wires: ["Admin", "Money Mover"],
+  Zelle: ["Admin", "Money Mover"],
+  Payroll: ["Admin", "Finance Lead", "Money Mover"],
 };
 
-const MERCHANT_ENABLED = ["Admin", "CFO", "Business Partner"] as const;
-const CARD_ACCESS_ROLES = ["Admin", "CFO", "Business Partner", "Read Only"] as const;
-const BUSINESS_CREDIT_ROLES = ["Admin", "CFO", "Business Partner"] as const;
+const MERCHANT_ENABLED = ["Admin", "Business Partner"] as const;
+const CARD_ACCESS_ROLES = ["Admin", "Business Partner", "Read Only"] as const;
+const BUSINESS_CREDIT_ROLES = ["Admin", "Business Partner"] as const;
 
 function moneyEnabled(role: string, name: string): boolean {
   if (role === "Custom") return false;
@@ -145,6 +140,18 @@ export function permissionsForP2Role(
     );
   }
 
+  if (role === "Business Partner") {
+    for (const name of P2_MONEY_LIMIT_TYPES) {
+      allowed[name] = true;
+    }
+    for (const name of P2_CREDIT_CARDS) {
+      allowed[name] = true;
+    }
+    for (const name of P2_MERCHANT_SERVICES) {
+      allowed[name] = true;
+    }
+  }
+
   const limits = Object.fromEntries(
     P2_MONEY_LIMIT_TYPES.map((name) => [name, "50000.00"]),
   );
@@ -162,6 +169,7 @@ export function isP2PredefinedRole(role: string): boolean {
 }
 
 export function normalizeP2Role(role: string): P2SelectableRole {
+  if (role === "CFO") return "Admin";
   if (P2_SELECTABLE_ROLES.includes(role as P2SelectableRole)) {
     return role as P2SelectableRole;
   }

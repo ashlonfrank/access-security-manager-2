@@ -26,9 +26,11 @@ export type ProposalTwoUser = User & {
 };
 
 function toProposalUser(user: User): ProposalTwoUser {
+  let role = normalizeRole(user.role);
+  if (role === "CFO") role = "Admin";
   return {
     ...user,
-    role: normalizeRole(user.role),
+    role,
     userId: `SU${user.id.slice(-4)}`,
     mobileAccess: user.status === "Active" || user.status === "Invited",
     thirdPartyAccess: user.role !== "Read Only",
