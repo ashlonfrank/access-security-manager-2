@@ -49,7 +49,7 @@ export function ChevronDownBold({ className = "" }: ChevronProps) {
       <path
         d="M3.5 6.25 8 10.75 12.5 6.25"
         stroke="currentColor"
-        strokeWidth="2.25"
+        strokeWidth="1"
         strokeLinecap="round"
         strokeLinejoin="round"
         fill="none"

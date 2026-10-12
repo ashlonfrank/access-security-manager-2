@@ -95,6 +95,10 @@ html:has(.proposal-two)::-webkit-scrollbar-corner,
   box-shadow: inset 0 -3px 0 #fff;
 }
 
+.proposal-two .back-bar {
+  background: var(--p2-canvas);
+}
+
 .proposal-two .back-bar .p2-back-bar-dummy {
   display: flex;
   gap: 4px;
@@ -106,6 +110,14 @@ html:has(.proposal-two)::-webkit-scrollbar-corner,
   font-weight: 600;
   color: var(--subdued);
   cursor: default;
+}
+
+.proposal-two .back-bar > div {
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 28px;
+  text-align: center;
+  color: #0f171f;
 }
 
 .proposal-two .p2-connect-header {
@@ -892,13 +904,13 @@ html:has(.proposal-two)::-webkit-scrollbar-corner,
   color: var(--p2-interactive);
 }
 
-/* After global .p2-chevron-icon — scope chevron: Users blue, +25% vs prior 0.9em / 25px. */
+/* After global .p2-chevron-icon — scope chevron: Users blue, 1px stroke (ChevronDownBold). */
 .proposal-two .p2-manage-scope-trigger .p2-chevron-icon,
 .proposal-two .p2-manage-scope-chevron {
-  width: 1.125em;
-  height: 1.125em;
-  min-width: 31px;
-  min-height: 31px;
+  width: 0.96em;
+  height: 0.96em;
+  min-width: 26px;
+  min-height: 26px;
   color: currentColor;
   align-self: center;
 }
