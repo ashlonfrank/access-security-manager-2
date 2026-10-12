@@ -100,7 +100,7 @@ function ManageScopeHeading({
           onClick={onToggle}
         >
           {manageScopeLabels[value]}
-          <ChevronRight className="p2-manage-scope-chevron" aria-hidden />
+          <ChevronDown className="p2-manage-scope-chevron" />
         </button>
         {open ? (
           <div
@@ -221,20 +221,13 @@ export default function ProposalTwoApp() {
   const [viewBy, setViewBy] = useState<ViewBy>("user");
   const [scopeOpen, setScopeOpen] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
-  const [showAllUsers, setShowAllUsers] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedCompanies, setExpandedCompanies] = useState<Record<string, boolean>>(
     {},
   );
   const selectedUser = selectedUserId ? userById(selectedUserId) : undefined;
 
-  const gridUsers = useMemo(() => {
-    const base = showAllUsers
-      ? [...proposalTwoUsers, ...proposalTwoUsers.slice(0, 3)]
-      : proposalTwoUsers.slice(0, 10);
-    if (viewBy === "user") return base;
-    return proposalTwoUsers;
-  }, [showAllUsers, viewBy]);
+  const gridUsers = useMemo(() => proposalTwoUsers, []);
 
   const searchResults = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
@@ -363,27 +356,11 @@ export default function ProposalTwoApp() {
             />
 
             {viewBy === "user" ? (
-              <>
-                <div className="p2-user-grid">
-                  {gridUsers.map((user, index) => (
-                    <UserTile
-                      key={`${user.id}-${index}`}
-                      user={user}
-                      onSelect={openUser}
-                    />
-                  ))}
-                </div>
-                {!showAllUsers ? (
-                  <button
-                    type="button"
-                    className="p2-show-all"
-                    onClick={() => setShowAllUsers(true)}
-                  >
-                    <span>Show all</span>
-                    <ChevronDown className="p2-show-all-chevron" />
-                  </button>
-                ) : null}
-              </>
+              <div className="p2-user-grid">
+                {gridUsers.map((user) => (
+                  <UserTile key={user.id} user={user} onSelect={openUser} />
+                ))}
+              </div>
             ) : null}
 
             {viewBy === "company" ? (

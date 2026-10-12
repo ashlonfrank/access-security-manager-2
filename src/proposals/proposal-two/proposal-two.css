@@ -511,16 +511,15 @@ html:has(.proposal-two)::-webkit-scrollbar-corner,
   color: var(--p2-interactive);
 }
 
-/* Scope menu chevron: ~80% of 28px title, interactive blue, reads heavier than tile arrows. */
+/* Scope chevron: ~72% of title cap height, currentColor = Users label blue. */
 .proposal-two .p2-manage-scope-chevron {
-  width: 0.8em;
-  height: 0.8em;
-  min-width: 22px;
-  min-height: 22px;
+  width: 0.72em;
+  height: 0.72em;
+  min-width: 20px;
+  min-height: 20px;
   flex-shrink: 0;
-  transform: rotate(90deg) scale(1.08);
-  filter: brightness(0) saturate(100%) invert(32%) sepia(89%) saturate(2200%)
-    hue-rotate(186deg) brightness(96%) contrast(101%);
+  align-self: center;
+  color: inherit;
 }
 
 .proposal-two .p2-manage-scope-menu {
@@ -734,23 +733,6 @@ html:has(.proposal-two)::-webkit-scrollbar-corner,
   font-size: var(--p2-font-body);
   line-height: 1.5;
   color: var(--p2-subdued);
-}
-
-.proposal-two .p2-show-all {
-  margin-top: 20px;
-  color: var(--p2-interactive);
-  font-size: 14px;
-  line-height: 20px;
-  font-weight: 600;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 0;
-}
-
-/* imgMask chevron glyph sits low in the 16×16 asset — nudge up against label cap height */
-.proposal-two .p2-show-all-chevron {
-  transform: translateY(-2px);
 }
 
 .proposal-two .p2-company-grid-wrap .p2-company-grid,
