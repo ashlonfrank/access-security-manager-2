@@ -25,12 +25,53 @@
   /* Type scale: 14px default body; 16px for emphasis (names, View by value). */
   --p2-font-body: 14px;
   --p2-font-emphasis: 16px;
+  --p2-scrollbar-size: 6px;
+  --p2-scrollbar-thumb: rgba(91, 108, 123, 0.22);
+  --p2-scrollbar-thumb-hover: rgba(91, 108, 123, 0.34);
   min-height: 100vh;
   background: var(--p2-canvas);
   color: #0f171f;
   font-family: "Open Sans", sans-serif;
   font-size: var(--p2-font-body);
   line-height: 1.5;
+}
+
+/* Minimal scrollbars: thin thumb only, no visible track (page + in-panel scroll). */
+html:has(.proposal-two),
+.proposal-two,
+.proposal-two * {
+  scrollbar-width: thin;
+  scrollbar-color: var(--p2-scrollbar-thumb) transparent;
+}
+
+html:has(.proposal-two)::-webkit-scrollbar,
+.proposal-two ::-webkit-scrollbar {
+  width: var(--p2-scrollbar-size);
+  height: var(--p2-scrollbar-size);
+}
+
+html:has(.proposal-two)::-webkit-scrollbar-track,
+.proposal-two ::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+html:has(.proposal-two)::-webkit-scrollbar-thumb,
+.proposal-two ::-webkit-scrollbar-thumb {
+  background: var(--p2-scrollbar-thumb);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+html:has(.proposal-two)::-webkit-scrollbar-thumb:hover,
+.proposal-two ::-webkit-scrollbar-thumb:hover {
+  background: var(--p2-scrollbar-thumb-hover);
+  background-clip: padding-box;
+}
+
+html:has(.proposal-two)::-webkit-scrollbar-corner,
+.proposal-two ::-webkit-scrollbar-corner {
+  background: transparent;
 }
 
 /* Chrome mirrors baseline; items are presentational only in Proposal 2. */
