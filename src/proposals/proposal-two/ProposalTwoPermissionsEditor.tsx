@@ -6,13 +6,10 @@ import {
   formatAccountLabel,
   visibleAccountsForUser,
 } from "../../demoAccounts";
-import { companyGroups } from "./proposalTwoDemo";
+import { coffeeCompanies } from "../../business";
+import { readProposalTwoPermissions } from "./proposalTwoPermissions";
 import ProposalTwoSolidSelect from "./ProposalTwoSolidSelect";
-import {
-  readStoredPermissions,
-  permissionsStorageKey,
-  type Permissions,
-} from "../../userPermissions";
+import { permissionsStorageKey, type Permissions } from "../../userPermissions";
 import {
   EditorContext,
   PermissionAccountsEditor,
@@ -20,7 +17,7 @@ import {
 } from "../../permissionUi";
 
 function readPermissions(user: User): Permissions {
-  return readStoredPermissions({ id: user.id, role: user.role });
+  return readProposalTwoPermissions({ id: user.id, role: user.role });
 }
 
 const tokenChoices = ["Soft token", "Hard token"] as const;
@@ -45,10 +42,9 @@ export default function ProposalTwoPermissionsEditor({ user }: { user: User }) {
   const [accountFilter, setAccountFilter] = useState("all");
 
   const companyIdx = useMemo(() => {
-    if (companyFilter === "all") return companyIndex(user.id);
     const parsed = Number(companyFilter);
     return Number.isFinite(parsed) ? parsed : companyIndex(user.id);
-  }, [companyFilter, user.id]);
+  }, [companyFilter]);
 
   const accountOptions = useMemo(
     () => visibleAccountsForUser(user.id, user.role, value, companyIdx),
@@ -130,13 +126,10 @@ export default function ProposalTwoPermissionsEditor({ user }: { user: User }) {
             label="Company name"
             value={companyFilter}
             onChange={setCompanyFilter}
-            options={[
-              { value: "all", label: "All companies" },
-              ...companyGroups.map((group) => ({
-                value: group.id,
-                label: group.name,
-              })),
-            ]}
+            options={coffeeCompanies.map((company, index) => ({
+              value: String(index),
+              label: `${company.name} ${company.location}`,
+            }))}
           />
           <ProposalTwoSolidSelect
             id="p2-account"

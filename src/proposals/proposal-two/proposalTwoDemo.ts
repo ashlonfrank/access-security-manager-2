@@ -69,7 +69,7 @@ export const companyGroups: CompanyGroup[] = coffeeCompanies.map(
     const accounts = accountsForCompany(index);
     return {
       id: String(index),
-      name: `${company.name} · ${company.location}`,
+      name: `${company.name} ${company.location}`,
       cardTitle: company.location,
       accountCount: accounts.length,
       users: members.map((user, memberIndex) => {
