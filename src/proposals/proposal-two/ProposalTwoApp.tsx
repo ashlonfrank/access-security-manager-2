@@ -4,7 +4,6 @@ import Avatar from "../../Avatar";
 import { isInactive, statusClass } from "../../business";
 import {
   companyGroups,
-  defaultPermissionsUserId,
   proposalTwoUsers,
   userById,
   type ProposalTwoUser,
@@ -211,32 +210,17 @@ function UserPermissionsPage({
 }
 
 /** Figma section 77 — Chase Connect tile dashboard (Proposal 2). */
-function readInitialViewBy(): ViewBy {
-  const params = new URLSearchParams(window.location.search);
-  const view = params.get("view");
-  if (view === "company") return "company";
-  return "user";
-}
-
-function readInitialScreen(): Screen {
-  const params = new URLSearchParams(window.location.search);
-  if (params.get("view") === "permissions" || params.get("user")) return "permissions";
-  return "list";
-}
-
-function readInitialUserId(): string | null {
-  const params = new URLSearchParams(window.location.search);
-  return (
-    params.get("user") ??
-    (params.get("view") === "permissions" ? defaultPermissionsUserId : null)
-  );
-}
-
 export default function ProposalTwoApp() {
-  const [screen, setScreen] = useState<Screen>(readInitialScreen);
-  const [viewBy, setViewBy] = useState<ViewBy>(readInitialViewBy);
+  useEffect(() => {
+    if (window.location.search) {
+      window.history.replaceState(null, "", window.location.pathname);
+    }
+  }, []);
+
+  const [screen, setScreen] = useState<Screen>("list");
+  const [viewBy, setViewBy] = useState<ViewBy>("user");
   const [scopeOpen, setScopeOpen] = useState(false);
-  const [selectedUserId, setSelectedUserId] = useState<string | null>(readInitialUserId);
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [showAllUsers, setShowAllUsers] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedCompanies, setExpandedCompanies] = useState<Record<string, boolean>>(

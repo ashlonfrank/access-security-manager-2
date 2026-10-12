@@ -11,9 +11,7 @@ npm install
 npm run dev
 ```
 
-**Preview:** [http://127.0.0.1:43123/](http://127.0.0.1:43123/) — no `?prototype=` query.
-
-User permissions example: [http://127.0.0.1:43123/?view=permissions&user=69029](http://127.0.0.1:43123/?view=permissions&user=69029)
+**Preview:** [http://127.0.0.1:43123/](http://127.0.0.1:43123/)
 
 Baseline and Proposal 1 live on **`main`** and **`proposal-1`**; do not duplicate Proposal 2 UI outside `src/proposals/proposal-two/`.
 
