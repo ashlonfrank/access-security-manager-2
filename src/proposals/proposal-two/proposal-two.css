@@ -93,6 +93,7 @@ html:has(.proposal-two)::-webkit-scrollbar-corner,
 
 .proposal-two .back-bar {
   background: var(--p2-canvas);
+  border-bottom: 1px solid #dce3ea;
 }
 
 .proposal-two .back-bar .p2-back-bar-dummy {
