@@ -511,15 +511,9 @@ html:has(.proposal-two)::-webkit-scrollbar-corner,
   color: var(--p2-interactive);
 }
 
-/* Scope chevron: ~72% of title cap height, currentColor = Users label blue. */
+/* Scope chevron sizing/color — see override after .p2-chevron-icon (global rule wins if only here). */
 .proposal-two .p2-manage-scope-chevron {
-  width: 0.72em;
-  height: 0.72em;
-  min-width: 20px;
-  min-height: 20px;
   flex-shrink: 0;
-  align-self: center;
-  color: inherit;
 }
 
 .proposal-two .p2-manage-scope-menu {
@@ -896,6 +890,17 @@ html:has(.proposal-two)::-webkit-scrollbar-corner,
 .proposal-two .p2-show-more .p2-chevron-icon,
 .proposal-two .p2-show-more-chevron {
   color: var(--p2-interactive);
+}
+
+/* After global .p2-chevron-icon (16px + subdued) — scope chevron matches Users blue, +25% vs 0.72em. */
+.proposal-two .p2-manage-scope-trigger .p2-chevron-icon,
+.proposal-two .p2-manage-scope-chevron {
+  width: 0.9em;
+  height: 0.9em;
+  min-width: 25px;
+  min-height: 25px;
+  color: currentColor;
+  align-self: center;
 }
 
 .proposal-two .p2-details-back .p2-chevron-icon,
