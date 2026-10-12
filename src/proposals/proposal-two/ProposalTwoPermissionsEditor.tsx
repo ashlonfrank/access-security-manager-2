@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, type Dispatch, type SetStateAction } from "react";
 import type { User } from "../../App";
 import { ChevronDown } from "./ProposalTwoChevrons";
 import { companyIndex, statusClass } from "../../business";
@@ -7,7 +7,11 @@ import {
   visibleAccountsForUser,
 } from "../../demoAccounts";
 import { coffeeCompanies } from "../../business";
-import { readProposalTwoPermissions } from "./proposalTwoPermissions";
+import {
+  mergeSavedPermissionsFromEditor,
+  permissionsWithCompanyStatements,
+  readProposalTwoPermissions,
+} from "./proposalTwoPermissions";
 import ProposalTwoSolidSelect from "./ProposalTwoSolidSelect";
 import { permissionsStorageKey, type Permissions } from "../../userPermissions";
 import {
@@ -29,8 +33,7 @@ function authenticationTypeLabel(value: Permissions): string {
 
 /**
  * Proposal 2 user-details permissions.
- * Demo hierarchy: company → account options (dropdown). Entitlements below stay
- * role-based like Proposal 1 and do not filter by selected account (kept separate for demo).
+ * Company dropdown scopes accounts; Riverside/Roastery also swap statement entitlements (demo).
  */
 export default function ProposalTwoPermissionsEditor({ user }: { user: User }) {
   const [editing, setEditing] = useState(false);
@@ -46,9 +49,30 @@ export default function ProposalTwoPermissionsEditor({ user }: { user: User }) {
     return Number.isFinite(parsed) ? parsed : companyIndex(user.id);
   }, [companyFilter]);
 
+  const contextualValue = useMemo(
+    () => permissionsWithCompanyStatements(value, companyIdx, user.id),
+    [value, companyIdx, user.id],
+  );
+
   const accountOptions = useMemo(
-    () => visibleAccountsForUser(user.id, user.role, value, companyIdx),
-    [user.id, user.role, value, companyIdx],
+    () => visibleAccountsForUser(user.id, user.role, contextualValue, companyIdx),
+    [user.id, user.role, contextualValue, companyIdx],
+  );
+
+  const setContextualValue: Dispatch<SetStateAction<Permissions>> = useCallback(
+    (action) => {
+      setValue((stored) => {
+        const current = permissionsWithCompanyStatements(
+          stored,
+          companyIdx,
+          user.id,
+        );
+        const next =
+          typeof action === "function" ? action(current) : action;
+        return mergeSavedPermissionsFromEditor(stored, next, companyIdx);
+      });
+    },
+    [companyIdx, user.id],
   );
 
   useEffect(() => {
@@ -89,8 +113,8 @@ export default function ProposalTwoPermissionsEditor({ user }: { user: User }) {
     <EditorContext.Provider
       value={{
         editing,
-        value,
-        setValue,
+        value: contextualValue,
+        setValue: setContextualValue,
         userId: user.id,
         role: user.role,
         companyIndex: companyIdx,
@@ -184,10 +208,10 @@ export default function ProposalTwoPermissionsEditor({ user }: { user: User }) {
                 <input
                   className="permission-checkbox"
                   type="checkbox"
-                  checked={value.mfa}
+                  checked={contextualValue.mfa}
                   onChange={(event) => {
                     const mfa = event.target.checked;
-                    setValue((prev) => ({
+                    setContextualValue((prev) => ({
                       ...prev,
                       mfa,
                       token: mfa
@@ -200,7 +224,7 @@ export default function ProposalTwoPermissionsEditor({ user }: { user: User }) {
                 />
                 Multi-factor authentication
               </label>
-              {value.mfa ? (
+              {contextualValue.mfa ? (
                 <fieldset>
                   <legend>Authentication type</legend>
                   {tokenChoices.map((token) => (
@@ -208,8 +232,10 @@ export default function ProposalTwoPermissionsEditor({ user }: { user: User }) {
                       <input
                         type="radio"
                         name={`token-p2-${user.id}`}
-                        checked={value.token === token}
-                        onChange={() => setValue({ ...value, token })}
+                        checked={contextualValue.token === token}
+                        onChange={() =>
+                          setContextualValue({ ...contextualValue, token })
+                        }
                       />
                       {token}
                     </label>
@@ -221,13 +247,13 @@ export default function ProposalTwoPermissionsEditor({ user }: { user: User }) {
             <dl>
               <div>
                 <dt>Multi-factor authentication</dt>
-                <dd>{value.mfa ? "Enabled" : "Disabled"}</dd>
+                <dd>{contextualValue.mfa ? "Enabled" : "Disabled"}</dd>
               </div>
               <div>
                 <dt>Authentication type</dt>
                 <dd>
                   <span className="permission-small-tag">
-                    {authenticationTypeLabel(value)}
+                    {authenticationTypeLabel(contextualValue)}
                   </span>
                 </dd>
               </div>
