@@ -791,6 +791,11 @@ html:has(.proposal-two)::-webkit-scrollbar-corner,
   background: transparent;
 }
 
+.proposal-two .p2-company-rows > .p2-company-row:last-child,
+.proposal-two .p2-company-card > .p2-company-row:last-child {
+  border-bottom: none;
+}
+
 .proposal-two .p2-company-row > span:first-child {
   min-width: 0;
   display: flex;
@@ -823,15 +828,14 @@ html:has(.proposal-two)::-webkit-scrollbar-corner,
   width: 100%;
   margin-top: 8px;
   padding: 4px 0 4px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
   text-align: right;
   color: var(--p2-interactive);
   font-size: 14px;
   line-height: 20px;
   font-weight: 600;
-}
-
-.proposal-two .p2-show-more-chevron {
-  color: var(--p2-interactive);
 }
 
 .proposal-two .p2-account-grid {
@@ -887,6 +891,11 @@ html:has(.proposal-two)::-webkit-scrollbar-corner,
   width: 16px;
   height: 16px;
   color: var(--p2-subdued);
+}
+
+.proposal-two .p2-show-more .p2-chevron-icon,
+.proposal-two .p2-show-more-chevron {
+  color: var(--p2-interactive);
 }
 
 .proposal-two .p2-details-back .p2-chevron-icon,
@@ -968,6 +977,10 @@ html:has(.proposal-two)::-webkit-scrollbar-corner,
   color: var(--p2-interactive);
   font-weight: 600;
   border-bottom: 1px solid #eef1f5;
+}
+
+.proposal-two .p2-action-links button:last-child {
+  border-bottom: none;
 }
 
 .proposal-two .p2-embedded-permissions.permissions-panel {
@@ -1255,6 +1268,10 @@ html:has(.proposal-two)::-webkit-scrollbar-corner,
   border-bottom: 1px solid #eef1f5;
   font-size: 14px;
   font-weight: 600;
+}
+
+.proposal-two .p2-account-accordion button:last-child {
+  border-bottom: none;
 }
 
 @media (max-width: 1100px) {

@@ -53,3 +53,18 @@ export function ChevronDown({ className = "" }: ChevronProps) {
     </svg>
   );
 }
+
+/** 16×16 collapse chevron — inline SVG (Show less). */
+export function ChevronUp({ className = "" }: ChevronProps) {
+  return (
+    <svg
+      {...svgBase}
+      className={`p2-chevron-icon ${className}`.trim()}
+    >
+      <path
+        d="M12.36 10.25a.75.75 0 0 1-1.06 0L8 6.95l-3.3 3.3a.75.75 0 1 1-1.06-1.06l3.83-3.83a.75.75 0 0 1 1.06 0l3.83 3.83a.75.75 0 0 1 0 1.06Z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}

@@ -9,7 +9,12 @@ import {
   type ProposalTwoUser,
 } from "./proposalTwoDemo";
 import ProposalTwoChrome from "./ProposalTwoChrome";
-import { ChevronDown, ChevronLeft, ChevronRight } from "./ProposalTwoChevrons";
+import {
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  ChevronUp,
+} from "./ProposalTwoChevrons";
 import ProposalTwoPermissionsEditor from "./ProposalTwoPermissionsEditor";
 import "./proposal-two.css";
 
@@ -365,13 +370,15 @@ export default function ProposalTwoApp() {
 
             {viewBy === "company" ? (
               <div className="p2-company-grid">
-                {companyGroups.map((group) => {
+                {companyGroups
+                  .filter((group) => group.users.length > 0)
+                  .map((group) => {
                   const expanded = expandedCompanies[group.id];
                   const previewCount = 4;
                   const visibleUsers = expanded
                     ? group.users
                     : group.users.slice(0, previewCount);
-                  const hasMore = !expanded && group.users.length > previewCount;
+                  const canToggleList = group.users.length > previewCount;
                   return (
                     <article key={group.id} className="p2-company-card">
                       <h2 className="p2-company-head">{group.cardTitle}</h2>
@@ -401,19 +408,24 @@ export default function ProposalTwoApp() {
                           );
                         })}
                       </div>
-                      {hasMore ? (
+                      {canToggleList ? (
                         <button
                           type="button"
                           className="p2-show-more"
+                          aria-expanded={expanded}
                           onClick={() =>
                             setExpandedCompanies((prev) => ({
                               ...prev,
-                              [group.id]: true,
+                              [group.id]: !expanded,
                             }))
                           }
                         >
-                          <span>Show more</span>
-                          <ChevronDown className="p2-show-more-chevron" />
+                          <span>{expanded ? "Show less" : "Show more"}</span>
+                          {expanded ? (
+                            <ChevronUp className="p2-show-more-chevron" />
+                          ) : (
+                            <ChevronDown className="p2-show-more-chevron" />
+                          )}
                         </button>
                       ) : null}
                     </article>
