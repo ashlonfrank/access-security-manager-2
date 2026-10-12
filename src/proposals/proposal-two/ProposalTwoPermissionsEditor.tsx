@@ -2,25 +2,30 @@ import { useCallback, useEffect, useMemo, useState, type Dispatch, type SetState
 import type { User } from "../../App";
 import { ChevronDown } from "./ProposalTwoChevrons";
 import { companyIndex, statusClass } from "../../business";
-import {
-  formatAccountLabel,
-  visibleAccountsForUser,
-} from "../../demoAccounts";
+import { formatAccountLabel } from "../../demoAccounts";
 import { coffeeCompanies } from "../../business";
+import { allAccountsForP2Company } from "./proposalTwoAccounts";
 import {
   mergeSavedPermissionsFromEditor,
   permissionsWithCompanyStatements,
   readProposalTwoPermissions,
+  saveProposalTwoPermissions,
+  seedPermissionsForP2,
 } from "./proposalTwoPermissions";
-import ProposalTwoSolidSelect from "./ProposalTwoSolidSelect";
-import { permissionsStorageKey, type Permissions } from "../../userPermissions";
 import {
-  EditorContext,
-  PermissionAccountsEditor,
-  PermissionCategoriesEditor,
-} from "../../permissionUi";
+  normalizeP2Role,
+  type P2SelectableRole,
+} from "./proposalTwoPermissionModel";
+import ProposalTwoRolePicker from "./ProposalTwoRolePicker";
+import ProposalTwoSolidSelect from "./ProposalTwoSolidSelect";
+import type { Permissions } from "../../userPermissions";
+import { EditorContext } from "../../permissionUi";
+import {
+  ProposalTwoPermissionAccountsEditor,
+  ProposalTwoPermissionCategoriesEditor,
+} from "./proposalTwoPermissionUi";
 
-function readPermissions(user: User): Permissions {
+function readPermissions(user: User) {
   return readProposalTwoPermissions({ id: user.id, role: user.role });
 }
 
@@ -33,11 +38,14 @@ function authenticationTypeLabel(value: Permissions): string {
 
 /**
  * Proposal 2 user-details permissions.
- * Company dropdown scopes accounts; Riverside/Roastery also swap statement entitlements (demo).
+ * Company dropdown scopes accounts; Riverside/Roastery demo swaps Account Information only.
  */
 export default function ProposalTwoPermissionsEditor({ user }: { user: User }) {
   const [editing, setEditing] = useState(false);
-  const [value, setValue] = useState<Permissions>(() => readPermissions(user));
+  const [value, setValue] = useState(() => readPermissions(user));
+  const [editRole, setEditRole] = useState<P2SelectableRole>(() =>
+    normalizeP2Role(readPermissions(user).p2Role ?? user.role),
+  );
   const [error, setError] = useState("");
   const [companyFilter, setCompanyFilter] = useState(() =>
     String(companyIndex(user.id)),
@@ -55,8 +63,8 @@ export default function ProposalTwoPermissionsEditor({ user }: { user: User }) {
   );
 
   const accountOptions = useMemo(
-    () => visibleAccountsForUser(user.id, user.role, contextualValue, companyIdx),
-    [user.id, user.role, contextualValue, companyIdx],
+    () => allAccountsForP2Company(companyIdx),
+    [companyIdx],
   );
 
   const setContextualValue: Dispatch<SetStateAction<Permissions>> = useCallback(
@@ -76,7 +84,9 @@ export default function ProposalTwoPermissionsEditor({ user }: { user: User }) {
   );
 
   useEffect(() => {
-    setValue(readPermissions(user));
+    const next = readPermissions(user);
+    setValue(next);
+    setEditRole(normalizeP2Role(next.p2Role ?? user.role));
     setEditing(false);
     setError("");
     setCompanyFilter(String(companyIndex(user.id)));
@@ -87,20 +97,29 @@ export default function ProposalTwoPermissionsEditor({ user }: { user: User }) {
   }, [companyFilter]);
 
   function beginEdit() {
-    setValue(readPermissions(user));
+    const next = readPermissions(user);
+    setValue(next);
+    setEditRole(normalizeP2Role(next.p2Role ?? user.role));
     setError("");
     setEditing(true);
   }
 
   function cancelEdit() {
-    setValue(readPermissions(user));
+    const next = readPermissions(user);
+    setValue(next);
+    setEditRole(normalizeP2Role(next.p2Role ?? user.role));
     setEditing(false);
     setError("");
   }
 
+  function handleRoleChange(nextRole: P2SelectableRole) {
+    setEditRole(nextRole);
+    setValue(seedPermissionsForP2({ id: user.id, role: user.role }, nextRole));
+  }
+
   function save() {
     try {
-      localStorage.setItem(permissionsStorageKey(user.id), JSON.stringify(value));
+      saveProposalTwoPermissions(user.id, { ...value, p2Role: editRole });
     } catch {
       setError("Changes could not be saved. Please try again.");
       return;
@@ -116,7 +135,7 @@ export default function ProposalTwoPermissionsEditor({ user }: { user: User }) {
         value: contextualValue,
         setValue: setContextualValue,
         userId: user.id,
-        role: user.role,
+        role: editRole,
         companyIndex: companyIdx,
       }}
     >
@@ -184,10 +203,17 @@ export default function ProposalTwoPermissionsEditor({ user }: { user: User }) {
               <h3>User info</h3>
             </div>
             <dl>
-              <div>
-                <dt>Role</dt>
-                <dd>
-                  <span className="permission-small-tag">{user.role}</span>
+              <div className="p2-role-field">
+                <dt id="p2-permissions-role-label">Role</dt>
+                <dd aria-labelledby="p2-permissions-role-label">
+                  {editing ? (
+                    <ProposalTwoRolePicker
+                      value={editRole}
+                      onChange={handleRoleChange}
+                    />
+                  ) : (
+                    <span className="permission-small-tag">{editRole}</span>
+                  )}
                 </dd>
               </div>
               <div>
@@ -260,8 +286,8 @@ export default function ProposalTwoPermissionsEditor({ user }: { user: User }) {
             </dl>
           )}
           </section>
-          <PermissionCategoriesEditor />
-          <PermissionAccountsEditor />
+          <ProposalTwoPermissionCategoriesEditor />
+          <ProposalTwoPermissionAccountsEditor />
         </div>
       </div>
     </EditorContext.Provider>

@@ -1,14 +1,18 @@
+import type { PermissionUser, Permissions } from "../../userPermissions";
 import {
-  paymentTypes,
-  permissionsStorageKey,
-  readStoredPermissions,
-  seedPermissionsForUser,
-  statementTypes,
-  type PermissionUser,
-  type Permissions,
-} from "../../userPermissions";
+  mergeP2AccountMaps,
+  seedP2AccountAccessAllCompanies,
+} from "./proposalTwoAccounts";
+import {
+  P2_ACCOUNT_INFORMATION,
+  P2_PERMISSIONS_STORAGE_KEY,
+  normalizeP2Role,
+  parseStoredP2Permissions,
+  permissionsForP2Role,
+  type StoredP2Permissions,
+} from "./proposalTwoPermissionModel";
 
-/** Proposal 2 demo: Riverside (2) and Roastery (3) show different statement entitlements. */
+/** Proposal 2 demo: Riverside (2) and Roastery (3) swap Account Information only. */
 export const P2_DEMO_STATEMENT_COMPANY_INDICES = [2, 3] as const;
 
 function hashKey(key: string): number {
@@ -20,19 +24,14 @@ function hashKey(key: string): number {
   return hash >>> 0;
 }
 
-function hashUserId(userId: string): number {
-  return hashKey(userId);
-}
-
-/** Hard-coded demo statement mix per location (role still gates money movement, etc.). */
-export function demoStatementEntitlements(
+export function demoAccountInformationForCompany(
   companyIdx: number,
   userId: string,
 ): Partial<Record<string, boolean>> | null {
   if (companyIdx === 2) {
     const hash = hashKey(`${userId}:riverside`);
     return Object.fromEntries(
-      statementTypes.map((name, index) => [
+      P2_ACCOUNT_INFORMATION.map((name, index) => [
         name,
         ((hash >> index) & 1) === 1,
       ]),
@@ -43,6 +42,7 @@ export function demoStatementEntitlements(
       "See activity and balances": false,
       "See check images": true,
       "See statements and documents": false,
+      "Download statements and documents": true,
     };
   }
   return null;
@@ -53,7 +53,7 @@ export function permissionsWithCompanyStatements(
   companyIdx: number,
   userId: string,
 ): Permissions {
-  const demo = demoStatementEntitlements(companyIdx, userId);
+  const demo = demoAccountInformationForCompany(companyIdx, userId);
   if (!demo) return base;
   const allowed = { ...base.allowed };
   for (const [name, flag] of Object.entries(demo)) {
@@ -62,47 +62,42 @@ export function permissionsWithCompanyStatements(
   return { ...base, allowed };
 }
 
-/** Stable demo spread so each user’s rights look different on first load (not API-driven). */
-function varyPermissionsSeed(base: Permissions, userId: string): Permissions {
-  const hash = hashUserId(userId);
-  const limits = { ...base.limits };
-  paymentTypes.forEach((name, index) => {
-    if (!base.allowed[name]) return;
-    const nibble = (hash >> (index % 12)) & 0xf;
-    const factor = 0.55 + nibble / 20;
-    limits[name] = (Number(base.limits[name]) * factor).toFixed(2);
-  });
-
-  const accountIds = Object.keys(base.accounts);
-  const accounts = { ...base.accounts };
-  accountIds.forEach((id, index) => {
-    if (((hash >> index) & 7) === 0) {
-      accounts[id] = !accounts[id];
-    }
-  });
-
-  const mfa = (hash & 0b1111) !== 0;
-  const token: Permissions["token"] = mfa
-    ? (hash & 1) === 0
-      ? "Soft token"
-      : "Hard token"
-    : "No token";
-
-  return { ...base, limits, accounts, mfa, token };
+export function seedPermissionsForP2(
+  user: PermissionUser,
+  roleOverride?: string,
+): StoredP2Permissions {
+  const role = normalizeP2Role(roleOverride ?? user.role);
+  const base = permissionsForP2Role(role);
+  const seededAccounts = seedP2AccountAccessAllCompanies(role);
+  return {
+    ...base,
+    accounts: seededAccounts,
+    p2Role: role,
+  };
 }
 
-export function readProposalTwoPermissions(user: PermissionUser): Permissions {
+export function readProposalTwoPermissions(user: PermissionUser): StoredP2Permissions {
   try {
-    if (localStorage.getItem(permissionsStorageKey(user.id))) {
-      return readStoredPermissions(user);
+    const raw = JSON.parse(
+      localStorage.getItem(P2_PERMISSIONS_STORAGE_KEY(user.id)) || "null",
+    );
+    const saved = parseStoredP2Permissions(raw);
+    if (saved) {
+      const role = normalizeP2Role(saved.p2Role ?? user.role);
+      const seededAccounts = seedP2AccountAccessAllCompanies(role);
+      return {
+        ...saved,
+        p2Role: role,
+        accounts: mergeP2AccountMaps(seededAccounts, saved.accounts),
+      };
     }
   } catch {
-    /* use seeded demo */
+    /* fall through */
   }
-  return varyPermissionsSeed(seedPermissionsForUser(user), user.id);
+  return seedPermissionsForP2(user);
 }
 
-/** Persist edits but keep Riverside/Roastery statement rows demo-driven on display. */
+/** Persist edits but keep Riverside/Roastery Account Information demo-driven on display. */
 export function mergeSavedPermissionsFromEditor(
   stored: Permissions,
   edited: Permissions,
@@ -110,8 +105,15 @@ export function mergeSavedPermissionsFromEditor(
 ): Permissions {
   if (companyIdx !== 2 && companyIdx !== 3) return edited;
   const allowed = { ...edited.allowed };
-  statementTypes.forEach((name) => {
-    allowed[name] = stored.allowed[name];
+  P2_ACCOUNT_INFORMATION.forEach((name) => {
+    allowed[name] = stored.allowed[name] ?? false;
   });
   return { ...edited, allowed };
+}
+
+export function saveProposalTwoPermissions(
+  userId: string,
+  value: StoredP2Permissions,
+): void {
+  localStorage.setItem(P2_PERMISSIONS_STORAGE_KEY(userId), JSON.stringify(value));
 }

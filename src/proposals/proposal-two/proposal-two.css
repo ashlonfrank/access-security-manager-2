@@ -1066,6 +1066,14 @@ html:has(.proposal-two)::-webkit-scrollbar-corner,
   padding-right: 0;
 }
 
+.proposal-two .p2-embedded-permissions .permission-item-nested {
+  padding-left: 28px;
+}
+
+.proposal-two .p2-role-field .role-picker {
+  max-width: 100%;
+}
+
 .proposal-two .p2-embedded-permissions .permission-accounts {
   margin-left: 0;
   margin-right: 0;
