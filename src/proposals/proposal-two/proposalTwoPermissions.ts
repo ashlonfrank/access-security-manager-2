@@ -9,6 +9,7 @@ import {
   normalizeP2Role,
   parseStoredP2Permissions,
   permissionsForP2Role,
+  stripP2ApprovalKeys,
   type StoredP2Permissions,
 } from "./proposalTwoPermissionModel";
 
@@ -88,6 +89,7 @@ export function readProposalTwoPermissions(user: PermissionUser): StoredP2Permis
       return {
         ...saved,
         p2Role: role,
+        allowed: stripP2ApprovalKeys(saved.allowed),
         accounts: mergeP2AccountMaps(seededAccounts, saved.accounts),
       };
     }

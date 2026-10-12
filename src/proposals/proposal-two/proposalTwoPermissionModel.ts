@@ -59,16 +59,10 @@ export const P2_MERCHANT_SERVICES = [
   "Payment Solutions",
 ] as const;
 
-export function p2ApprovalKey(permission: string): string {
-  return `Requires approval: ${permission}`;
-}
-
 export function allP2EntitlementKeys(): string[] {
-  const approvals = P2_MONEY_LIMIT_TYPES.map((name) => p2ApprovalKey(name));
   return [
     ...P2_ACCOUNT_INFORMATION,
     ...P2_MONEY_LIMIT_TYPES,
-    ...approvals,
     ...P2_CREDIT_CARDS,
     ...P2_MERCHANT_SERVICES,
   ];
@@ -133,7 +127,6 @@ export function permissionsForP2Role(
 
   for (const name of P2_MONEY_LIMIT_TYPES) {
     allowed[name] = moneyEnabled(role, name);
-    allowed[p2ApprovalKey(name)] = false;
   }
 
   for (const name of P2_CREDIT_CARDS) {
@@ -204,7 +197,7 @@ export function parseStoredP2Permissions(raw: unknown): StoredP2Permissions | nu
   return null;
 }
 
-/** When a money permission is turned on, ensure limit default and approval off unless already set. */
+/** When a money permission is turned on, ensure limit default unless already set. */
 export function applyP2MoneyToggleDefaults(
   previous: Permissions,
   permission: string,
@@ -222,13 +215,17 @@ export function applyP2MoneyToggleDefaults(
   }
   return {
     ...previous,
-    allowed: {
-      ...previous.allowed,
-      [permission]: enabled,
-      [p2ApprovalKey(permission)]: enabled
-        ? (previous.allowed[p2ApprovalKey(permission)] ?? false)
-        : false,
-    },
+    allowed: { ...previous.allowed, [permission]: enabled },
     limits,
   };
+}
+
+export function stripP2ApprovalKeys(
+  allowed: Record<string, boolean>,
+): Record<string, boolean> {
+  return Object.fromEntries(
+    Object.entries(allowed).filter(
+      ([key]) => !key.startsWith("Requires approval:"),
+    ),
+  );
 }

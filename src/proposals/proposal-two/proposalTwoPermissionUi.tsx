@@ -1,4 +1,4 @@
-import { Fragment, useContext, type ReactNode } from "react";
+import { useContext, type ReactNode } from "react";
 import assets from "../../permission-assets.json";
 import { formatAccountLabel } from "../../demoAccounts";
 import type { Permissions } from "../../userPermissions";
@@ -10,17 +10,14 @@ import {
   P2_MERCHANT_SERVICES,
   P2_MONEY_LIMIT_TYPES,
   applyP2MoneyToggleDefaults,
-  p2ApprovalKey,
 } from "./proposalTwoPermissionModel";
 
 function PermissionToggle({
   text,
   limit = false,
-  showApproval = false,
 }: {
   text: string;
   limit?: boolean;
-  showApproval?: boolean;
 }) {
   const ctx = useContext(EditorContext);
   if (!ctx) return null;
@@ -38,7 +35,7 @@ function PermissionToggle({
           onChange={(event) => {
             const checked = event.target.checked;
             setValue((previous) =>
-              showApproval || limit
+              limit
                 ? applyP2MoneyToggleDefaults(previous, text, checked)
                 : {
                     ...previous,
@@ -93,45 +90,6 @@ function PermissionToggle({
   );
 }
 
-function ApprovalToggle({ parentPermission }: { parentPermission: string }) {
-  const ctx = useContext(EditorContext);
-  if (!ctx) return null;
-  const { editing, value, setValue } = ctx;
-  const key = p2ApprovalKey(parentPermission);
-  if (!value.allowed[parentPermission]) return null;
-  const on = value.allowed[key] ?? false;
-  const label = "Requires approval";
-
-  return (
-    <li className="permission-item permission-item-nested">
-      {editing ? (
-        <input
-          type="checkbox"
-          className="permission-checkbox"
-          aria-label={`${label} for ${parentPermission}`}
-          checked={on}
-          onChange={(event) =>
-            setValue((previous) => ({
-              ...previous,
-              allowed: { ...previous.allowed, [key]: event.target.checked },
-            }))
-          }
-        />
-      ) : (
-        <span
-          className={`permission-state-icon ${on ? "allowed" : "denied"}`}
-          role="img"
-          aria-label={on ? "Requires approval on" : "Requires approval off"}
-          style={{
-            maskImage: `url(${on ? assets.imgSuccessIcoCheckmark : assets.imgActionIcoClose})`,
-          }}
-        />
-      )}
-      <span>{label}</span>
-    </li>
-  );
-}
-
 const categoryDescriptions: Record<string, string> = {
   "Account Information": "Balances, statements, and account records",
   "Money movement": "Payments, transfers, and daily limits",
@@ -178,10 +136,7 @@ export function ProposalTwoPermissionCategoriesEditor() {
         </PermissionCategory>
         <PermissionCategory title="Money movement" icon={assets.imgIcon2}>
           {P2_MONEY_LIMIT_TYPES.map((text) => (
-            <Fragment key={text}>
-              <PermissionToggle text={text} limit showApproval />
-              <ApprovalToggle parentPermission={text} />
-            </Fragment>
+            <PermissionToggle key={text} text={text} limit />
           ))}
         </PermissionCategory>
         <PermissionCategory title="Credit cards" icon={assets.imgIcon4}>
