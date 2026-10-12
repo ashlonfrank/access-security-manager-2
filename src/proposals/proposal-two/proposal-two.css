@@ -34,6 +34,13 @@
   font-family: "Open Sans", sans-serif;
   font-size: var(--p2-font-body);
   line-height: 1.5;
+  font-synthesis: none;
+}
+
+.proposal-two,
+.proposal-two * {
+  font-family: "Open Sans", sans-serif;
+  font-synthesis: none;
 }
 
 /* Minimal scrollbars: thin thumb only, no visible track (page + in-panel scroll). */
